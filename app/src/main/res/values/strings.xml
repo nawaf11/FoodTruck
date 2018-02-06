@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">FoodTruck</string>
+    <string name="title_activity_maps">Food Truck</string>
+    <string name="toolbar_profileTitle">الحساب</string>
+    <string name="toolbar_mapTitle">الخريطة</string>
+    <string name="toolbar_truckListTitle">قائمة العربات</string>
+</resources>
