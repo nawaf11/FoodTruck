@@ -19,19 +19,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.login);
+        setContentView(R.layout.activity_main);
 
-        Button v1 = findViewById(R.id.msgButton);
-
-        v1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(getApplicationContext(),"FFFFF",Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        if(true)
-        return;
+        
         setupToolbar(); // include items listener .
 
 
