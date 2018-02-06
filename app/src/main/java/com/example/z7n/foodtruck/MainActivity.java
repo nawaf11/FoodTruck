@@ -14,14 +14,30 @@ import com.example.z7n.foodtruck.Fragments.MapFragment;
 
 
 public class MainActivity extends AppCompatActivity {
+/*TODO:
+  ================== Fragments: ====================
+   - MapFragment.
+   - TruckListFragment
+   - CustomerProfileFragment
+   - TruckProfileFragment
+   - TruckPageFragment
+   - NotificationsFragment
+   - RegisterFragment ( 2 option as truck/customer )
+   - LoginFragment ( 2 option as truck/customer)
+     ------- Fragment for Truck -------
+      - MyOrderFragment
+      - MenuFragment
 
+     ------- Fragment for Customer -------
+
+    */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        
+
         setupToolbar(); // include items listener .
 
 
