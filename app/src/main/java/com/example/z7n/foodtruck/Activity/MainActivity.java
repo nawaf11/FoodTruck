@@ -1,4 +1,4 @@
-package com.example.z7n.foodtruck;
+package com.example.z7n.foodtruck.Activity;
 
 
 import android.graphics.Color;
@@ -7,16 +7,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
-import android.widget.Button;
-import android.widget.Toast;
+
 
 import com.example.z7n.foodtruck.Fragments.MapFragment;
+import com.example.z7n.foodtruck.Fragments.TruckListFragment;
+import com.example.z7n.foodtruck.R;
 
 
 public class MainActivity extends AppCompatActivity {
-/*TODO:
+/** TODO:
   ================== Fragments: ====================
-   - MapFragment.
+   - MapFragment
    - TruckListFragment
    - CustomerProfileFragment
    - TruckProfileFragment
@@ -41,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
         setupToolbar(); // include items listener .
 
 
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MapFragment()).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new TruckListFragment()).commit();
 
     }
 

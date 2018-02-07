@@ -4,5 +4,9 @@
     <string name="toolbar_profileTitle">الحساب</string>
     <string name="toolbar_mapTitle">الخريطة</string>
     <string name="toolbar_truckListTitle">قائمة العربات</string>
-    <string name="truckClass_warnMsg">MSG</string>
+    <string name="gpsAlert_title">تفعيل GPS</string>
+    <string name="gpsAlert_message">الرجاء تفعيل GPS لعرض العربات المجاورة</string>
+    <string name="gpsAlert_positiveButton">تفعيل</string>
+    <string name="gpsAlert_negativeButton">ليس الأن</string>
+
 </resources>
