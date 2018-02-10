@@ -43,7 +43,6 @@
                 android:id="@+id/barItem_container_map"
                 android:orientation="vertical"
                 android:layout_weight="1"
-                android:background="@color/colorPrimaryLight"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content">
 
@@ -68,6 +67,7 @@
                 android:orientation="vertical"
                 android:layout_weight="1"
                 android:layout_width="0dp"
+                android:background="@color/colorPrimaryLight"
                 android:id="@+id/barItem_container_list"
                 android:layout_height="wrap_content">
 

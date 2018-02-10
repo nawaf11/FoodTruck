@@ -8,5 +8,8 @@
     <string name="gpsAlert_message">الرجاء تفعيل GPS لعرض العربات المجاورة</string>
     <string name="gpsAlert_positiveButton">تفعيل</string>
     <string name="gpsAlert_negativeButton">ليس الأن</string>
+    <string name="toolbar_notificationTitle">الإشعارات</string>
+    <string name="nav_open">Open</string>
+    <string name="nav_close">Close</string>
 
 </resources>

@@ -3,9 +3,15 @@ package com.example.z7n.foodtruck.Activity;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 
@@ -14,7 +20,12 @@ import com.example.z7n.foodtruck.Fragments.TruckListFragment;
 import com.example.z7n.foodtruck.R;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+
+    private NavigationView mNavigationView;
+    private int navigationSelectedItem;
+    private DrawerLayout mDrawerLayout;
+
 /** TODO:
   ================== Fragments: ====================
    - MapFragment
@@ -38,15 +49,34 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-        setupToolbar(); // include items listener .
-
+        setupNavigationView();
 
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new TruckListFragment()).commit();
 
     }
 
-    private void setupToolbar() {
+    private void setupNavigationView() {
+        if(getSupportActionBar() != null) {
+            Log.d("actionBar","insideIf statement!");
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setHomeButtonEnabled(true);
+        }
+        mNavigationView = findViewById(R.id.navigationView);
+
+        mNavigationView.setCheckedItem(R.id.navigationBarItem_truckList);
+        navigationSelectedItem = R.id.navigationBarItem_truckList;
+        mNavigationView.setNavigationItemSelectedListener(this);
+        mNavigationView.setItemIconTintList(null);
+
+        mDrawerLayout = findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(this
+                ,mDrawerLayout,R.string.nav_open,R.string.nav_close);
+        mDrawerLayout.addDrawerListener(drawerToggle);
+        drawerToggle.syncState();
+
+    }
+
+    private void setupBottomToolbar() {
         findViewById(R.id.barItem_container_account)
                 .setOnClickListener(new View.OnClickListener() {
 
@@ -66,6 +96,8 @@ public class MainActivity extends AppCompatActivity {
                         Log.d("traceer","baItem.OnClick start");
                         unselectBarItems();
                         view.setBackgroundColor(getResources().getColor(R.color.colorPrimaryLight));
+                        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                                new MapFragment()).commit();
 
                     }
                 });
@@ -78,6 +110,8 @@ public class MainActivity extends AppCompatActivity {
                         Log.d("traceer","baItem.OnClick start");
                         unselectBarItems();
                         view.setBackgroundColor(getResources().getColor(R.color.colorPrimaryLight));
+                        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                                new TruckListFragment()).commit();
                     }
                 });
 
@@ -92,5 +126,44 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+       if(item.getItemId() == 16908332){ // 16908332 is id of nav_item
+            mDrawerLayout = findViewById(R.id.drawer_layout);
+           if(mDrawerLayout.isDrawerOpen(GravityCompat.START))
+               mDrawerLayout.closeDrawer(GravityCompat.START);
+           else
+               mDrawerLayout.openDrawer(GravityCompat.START);
+       }
+
+        return true;
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        mDrawerLayout.closeDrawer(GravityCompat.START);
+
+       if(item.getItemId() == navigationSelectedItem)
+           return true;
+
+        navigationSelectedItem = item.getItemId();
+        mNavigationView.setCheckedItem(item.getItemId());
+
+        switch (item.getItemId()){
+            case R.id.navigationBarItem_map:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        new MapFragment()).commit();
+                return true;
+
+            case R.id.navigationBarItem_truckList:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        new TruckListFragment()).commit();
+                return true;
+        }
+
+        return false;
     }
 }
