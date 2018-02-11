@@ -14,21 +14,23 @@
             android:id="@+id/fragment_container"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
-            android:background="#222">
+            android:layout_weight="1">
 
         </FrameLayout>
-        <include layout="@layout/bottom_toolbar" />
+        <!--<include layout="@layout/bottom_toolbar" />-->
 
 
     </LinearLayout>
 
     <android.support.design.widget.NavigationView
-        android:id="@+id/navigation"
+        android:id="@+id/navigationView"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
         app:menu="@menu/navigation_menu"
+        android:background="@color/colorPrimary"
+        app:itemBackground="@drawable/navigation_item_background"
+        app:itemTextColor="@android:color/white"
         />
 
 

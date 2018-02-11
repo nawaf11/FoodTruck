@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/truckItem_ImageView"
+        android:layout_width="@dimen/truckItem_ImageSize"
+        android:layout_height="@dimen/truckItem_ImageSize"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginLeft="8dp" />
+
+    <TextView
+        android:id="@+id/truckItem_truckName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:text="@string/app_name"
+        style="@style/myText1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/truckItem_ImageView"
+        app:layout_constraintTop_toTopOf="@+id/truckItem_ImageView" />
+
+    <TextView
+        android:id="@+id/truckItem_distanceTextView"
+        android:layout_width="52dp"
+        android:layout_height="19dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="14.4 KM"
+        app:layout_constraintStart_toStartOf="@+id/truckItem_truckName"
+        app:layout_constraintTop_toBottomOf="@+id/truckItem_truckName"
+        android:layout_marginLeft="8dp" />
+
+
+</android.support.constraint.ConstraintLayout>

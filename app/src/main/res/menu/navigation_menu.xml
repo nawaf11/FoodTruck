@@ -1,8 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group >
-        <item android:title="Item" />
-        <item android:title="Item" />
+    <group>
+
+        <item android:id="@+id/navigationBarItem_truckList" android:title="@string/toolbar_truckListTitle"
+            android:icon="@drawable/list" android:checkable="true" />
+
+        <item android:id="@+id/navigationBarItem_map" android:title="@string/toolbar_mapTitle"
+            android:icon="@drawable/map" android:checkable="true"/>
+
+        <item android:id="@+id/navigationBarItem_profile" android:title="@string/toolbar_profileTitle"
+            android:icon="@drawable/profile" android:checkable="true"/>
+
+        <item android:id="@+id/navigationBarItem_notification" android:title="@string/toolbar_notificationTitle"
+            android:checkable="true" android:icon="@drawable/notification" />
+
     </group>
 </menu>
