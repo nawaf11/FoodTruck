@@ -32,6 +32,8 @@ public class MainActivity extends AppCompatActivity {
 
     */
 
+public void nasser(){}
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
