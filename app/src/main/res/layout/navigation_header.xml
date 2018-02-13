@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/colorPrimary"
+    android:paddingBottom="16dp"
+    >
+
+<android.support.constraint.ConstraintLayout
+    android:visibility="visible"
+    android:id="@+id/truckHeader_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    >
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/navigationHeader_truckImage"
+        android:layout_width="@dimen/navigationHeader_truckImage_size"
+        android:layout_height="@dimen/navigationHeader_truckImage_size"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:src="@drawable/foodtruck"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginLeft="16dp" />
+
+    <TextView
+        android:id="@+id/navigationHeader_truckName"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="0dp"
+        android:text="Truck name"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        android:textSize="@dimen/navigationHeader_truckName_size"
+        app:layout_constraintStart_toEndOf="@+id/navigationHeader_truckImage"
+        app:layout_constraintTop_toTopOf="@+id/navigationHeader_truckImage"
+        android:layout_marginLeft="8dp" />
+
+    <TextView
+        android:id="@+id/navigationHeader_truckUserName"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:text="Username"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/navigationHeader_truckName_size"
+        app:layout_constraintStart_toStartOf="@+id/navigationHeader_truckName"
+        app:layout_constraintTop_toBottomOf="@+id/navigationHeader_truckName"
+        android:layout_marginLeft="8dp" />
+
+    <TextView
+        android:id="@+id/navigationHeader_truckStatusLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/truck_status"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/navigationHeader_truckName_size"
+        app:layout_constraintStart_toEndOf="@+id/navigationHeader_truckImage"
+        app:layout_constraintTop_toBottomOf="@+id/navigationHeader_truckUserName"
+        android:layout_marginLeft="8dp" />
+
+    <Switch
+        android:id="@+id/navigationHeader_truckStatusSwitch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/truckStatus_open"
+        android:textColor="@color/truckStatus_green"
+        android:layout_marginStart="8dp"
+        app:layout_constraintStart_toEndOf="@+id/navigationHeader_truckStatusLabel"
+        app:layout_constraintTop_toTopOf="@+id/navigationHeader_truckStatusLabel"
+        android:layout_marginLeft="8dp" />
+
+    <TextView
+        android:id="@+id/navigationHeader_signOut"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/navigationHeader_signOut"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/navigationHeader_truckName_size"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/navigationHeader_truckImage"
+        android:layout_marginRight="16dp" />
+
+</android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.ConstraintLayout
+        android:visibility="gone"
+        android:id="@+id/visitorHeader_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+
+        <TextView
+            android:id="@+id/navigation_header_signIn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:text="@string/navigationBar_signIn"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            android:textSize="@dimen/navigationHeader_truckName_size"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginLeft="16dp" />
+
+        <TextView
+            android:id="@+id/navigation_header_createAccount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="0dp"
+            android:text="@string/navigationHeader_createAccount"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/navigationHeader_truckName_size"
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@+id/navigation_header_signIn"
+            app:layout_constraintTop_toTopOf="@+id/navigation_header_signIn"
+            android:layout_marginLeft="32dp" />
+
+
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.ConstraintLayout
+        android:visibility="gone"
+        android:id="@+id/customerHeader_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+    </android.support.constraint.ConstraintLayout>
+
+</FrameLayout>

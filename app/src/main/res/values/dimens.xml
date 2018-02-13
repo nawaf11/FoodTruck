@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="truckItem_ImageSize">60dp</dimen>
+    <dimen name="truck_profile_imageSize">80dp</dimen>
+    <dimen name="navigationHeader_truckImage_size">80dp</dimen>
+    <dimen name="navigationHeader_truckName_size">16sp</dimen>
 </resources>

@@ -3,5 +3,8 @@
     <color name="colorPrimary">#340c86</color>
     <color name="colorPrimaryDark">#1d0058</color>
     <color name="colorPrimaryLight">#6e28ff</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorAccent">#36a41a</color>
+    <color name="editText_borderColor">#222</color>
+    <color name="truckStatus_green">#35dc35</color>
+    <color name="truckStatus_red">#dc2e37</color>
 </resources>

@@ -1,5 +1,6 @@
 package com.example.z7n.foodtruck;
 
+import android.content.Context;
 import android.location.Location;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -16,18 +17,23 @@ public class Truck {
     private String email;
     private String phoneNumber;
     private String description;
-    private String status; // On , Off
-    private boolean isAcceptOrder; // is the truck want accept order from customer.
+    private boolean isOpen=false; // On , Off
+    private boolean isAcceptOrder=false; // is the truck want accept order from customer.
     private double rate; // ex: 4.5
 
     private Location location; // current location of the truck.
-
 
     public Truck(String emailOrUsername, String password) {
         // user insert email/user then other data pulled from the server.
 
     }
 
+    public static String getStatusText(Context context, boolean isOpen){
+        if (isOpen)
+            return context.getResources().getString(R.string.truckStatus_open);
+
+        return context.getResources().getString(R.string.truckStatus_closed);
+    }
 
     public long getTruckId() {
         return id;
@@ -77,12 +83,19 @@ public class Truck {
         this.description = description;
     }
 
-    public String getStatus() {
-        return status;
+    public boolean isStatusOpen() {
+        return isOpen;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setStatus(boolean isOpen) {
+        this.isOpen = isOpen;
+    }
+
+    public String getStatusText(Context context){
+        if (isOpen)
+            return context.getResources().getString(R.string.truckStatus_open);
+
+        return context.getResources().getString(R.string.truckStatus_closed);
     }
 
     public boolean isAcceptOrder() {

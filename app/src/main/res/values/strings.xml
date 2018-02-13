@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">FoodTruck</string>
     <string name="title_activity_maps">Food Truck</string>
-    <string name="toolbar_profileTitle">الحساب</string>
+    <string name="toolbar_profileTitle">حسابي</string>
     <string name="toolbar_mapTitle">الخريطة</string>
     <string name="toolbar_truckListTitle">قائمة العربات</string>
     <string name="gpsAlert_title">تفعيل GPS</string>
@@ -21,5 +21,18 @@
     <string name="registerChooseTruck">صاحب عربة طعام</string>
     <string name="registerChooseUser">مستخدم عادي</string>
     <string name="RegisterChooseText">اختر نوع الحساب</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="truck_description">وصف العربة</string>
+    <string name="trucName">اسم العربة</string>
+    <string name="change_password">تغير كلمة المرور؟</string>
+    <string name="truck_status">الحالة:</string>
+    <string name="truckStatus_open">مفتوح</string>
+    <string name="truckStatus_closed">مغلق</string>
+    <string name="navigationBar_signIn">تسجيل الدخول</string>
+    <string name="navigationHeader_createAccount">إنشاء حساب</string>
+    <string name="login_emailOrUsername">البريد الإلكتروني أو اسم المستخدم</string>
+    <string name="navigationHeader_signOut">تسجيل الخروج</string>
 
 </resources>
