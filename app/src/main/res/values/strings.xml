@@ -34,5 +34,8 @@
     <string name="navigationHeader_createAccount">إنشاء حساب</string>
     <string name="login_emailOrUsername">البريد الإلكتروني أو اسم المستخدم</string>
     <string name="navigationHeader_signOut">تسجيل الخروج</string>
+    <string name="reserve">أحجز العربة</string>
+    <string name="order">اطلب الآن</string>
+    <string name="comunication">وسائل التواصل</string>
 
 </resources>
