@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -11,6 +10,7 @@
         android:id="@+id/login_emailOrUsername_editText"
         android:layout_width="312dp"
         android:layout_height="wrap_content"
+        style="@style/myEditText"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="80dp"
@@ -23,9 +23,10 @@
 
 
     <EditText
-        android:id="@+id/editText2"
+        android:id="@+id/login_password"
         android:layout_width="312dp"
         android:layout_height="wrap_content"
+        style="@style/myEditText"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
@@ -44,12 +45,12 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
         android:text="@string/login_loginBtn"
-        android:background="@color/colorPrimary"
+        android:background="@color/colorSecondary"
         android:textColor="@android:color/white"
         android:textStyle="bold"
         android:paddingRight="8dp"
         android:paddingLeft="8dp"
-        app:layout_constraintEnd_toEndOf="@+id/editText2"
-        app:layout_constraintStart_toStartOf="@+id/editText2"
-        app:layout_constraintTop_toBottomOf="@+id/editText2" />
+        app:layout_constraintEnd_toEndOf="@+id/login_password"
+        app:layout_constraintStart_toStartOf="@+id/login_password"
+        app:layout_constraintTop_toBottomOf="@+id/login_password" />
 </android.support.constraint.ConstraintLayout>

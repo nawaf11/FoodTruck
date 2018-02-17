@@ -26,13 +26,13 @@ public class TruckPageFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        parentView = inflater.inflate(R.layout.fragment_truck_profile, container, false);
+        parentView = inflater.inflate(R.layout.truckpage_fragment, container, false);
         truckName = parentView.findViewById(R.id.truckName);
         initTruck();
 
-        truckName.setText(truck.getTruckName());
+//        truckName.setText(truck.getTruckName());
 
-        return super.onCreateView(inflater, container, savedInstanceState);
+        return parentView;
     }
 
     private void initTruck() {
@@ -46,5 +46,6 @@ public class TruckPageFragment extends Fragment {
             return;
 
         truck = loginState.getTruck();
+        
     }
 }

@@ -10,7 +10,7 @@ public class Product {
     private String name;
     private double price;
 
-    private Product(long id){
+    public Product(long id){
         this.id = id;
         // ...
     }

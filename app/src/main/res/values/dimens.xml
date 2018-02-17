@@ -4,4 +4,6 @@
     <dimen name="truck_profile_imageSize">80dp</dimen>
     <dimen name="navigationHeader_truckImage_size">80dp</dimen>
     <dimen name="navigationHeader_truckName_size">16sp</dimen>
+    <dimen name="truckDescription_editText_Height">140dp</dimen>
+    <dimen name="product_item_imageSize">80dp</dimen>
 </resources>

@@ -5,6 +5,8 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -13,14 +15,14 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
-
+import com.androidnetworking.AndroidNetworking;
 import com.example.z7n.foodtruck.Fragments.LoginFragment;
 import com.example.z7n.foodtruck.Fragments.MapFragment;
+import com.example.z7n.foodtruck.Fragments.RegisterFragment;
 import com.example.z7n.foodtruck.Fragments.TruckListFragment;
 import com.example.z7n.foodtruck.Fragments.TruckProfileFragment;
 import com.example.z7n.foodtruck.LoginState;
@@ -57,18 +59,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        AndroidNetworking.initialize(getApplicationContext());
 
         loginState = new LoginState();
 
         setupNavigationView();
 
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new TruckListFragment()).commit();
+        setFragment(new TruckListFragment());
 
     }
 
     private void setupNavigationView() {
         if(getSupportActionBar() != null) {
-            Log.d("actionBar","insideIf statement!");
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setHomeButtonEnabled(true);
         }
@@ -91,8 +93,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                                new LoginFragment()).commit();
+                        setFragment(new LoginFragment());
                       mDrawerLayout.closeDrawer(GravityCompat.START);
                     }
                 });
@@ -101,14 +102,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                .setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View v) {
+               loginState = new LoginState();
                loginChangeVisitorHeader();
-               getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                       new TruckListFragment()).commit();
+               setFragment(new TruckListFragment());
                mDrawerLayout.closeDrawer(GravityCompat.START);
            }
        });
 
+       navHeader.findViewById(R.id.navigation_header_createAccount)
+               .setOnClickListener(new View.OnClickListener() {
+                   @Override
+                   public void onClick(View v) {
+                       setFragment( new RegisterFragment());
+                       mDrawerLayout.closeDrawer(GravityCompat.START);
+                   }
+               });
+
        final Switch statusSwitch = navHeader.findViewById(R.id.navigationHeader_truckStatusSwitch);
+        statusSwitch.setChecked(false);
+        statusSwitch.setText(Truck.getStatusText(getBaseContext(),false));
+        statusSwitch.setTextColor(getResources().getColor((R.color.truckStatus_red)));
 
        statusSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
            @Override
@@ -204,17 +217,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         switch (item.getItemId()){
             case R.id.navigationBarItem_map:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                        new MapFragment()).commit();
+                setFragment(new MapFragment());
                 return true;
 
             case R.id.navigationBarItem_truckList:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                        new TruckListFragment()).commit();
+                setFragment(new TruckListFragment());
                 return true;
+
             case R.id.navigationBarItem_profile:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                        new TruckProfileFragment()).commit();
+                setFragment(new TruckProfileFragment() );
                 return true;
         }
 
@@ -226,13 +237,43 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return loginState;
     }
 
-    public void setLoginState(LoginState mLoginState, boolean isTruck) { // This must be called from LoginFragment
+    public void setLoginState(LoginState mLoginState) { // This must be called from LoginFragment
         this.loginState = mLoginState;
-        if(isTruck)
+        if(loginState.isTruck())
             loginChangeTruckHeader(mLoginState.getTruck());
         else
             loginChangeCustomerHeader();
     }
+
+    public void setFragment(Fragment fragment, boolean isBackTrace){
+        if(!isNavFragment(fragment) && navigationSelectedItem != -1) {
+            mNavigationView.getMenu().findItem(navigationSelectedItem).setChecked(false);
+            navigationSelectedItem = -1;
+        } else if(navigationSelectedItem != -1){
+            mNavigationView.getMenu().findItem(navigationSelectedItem).setChecked(true);
+        }
+
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+        if(isBackTrace)
+            transaction.addToBackStack("myFragment");
+
+        transaction.replace(R.id.fragment_container, fragment)
+                .setPrimaryNavigationFragment(fragment)
+                .commit();
+    }
+
+    public void setFragment(Fragment fragment){
+        setFragment(fragment,false);
+    }
+
+    public boolean isNavFragment(Fragment f) {
+        return f instanceof TruckListFragment ||
+                f instanceof MapFragment ||
+                f instanceof TruckProfileFragment;
+    }
+
+
 
     private void loginChangeTruckHeader(Truck truck){
         mNavigationView.getHeaderView(0).findViewById(R.id.truckHeader_container).setVisibility(View.VISIBLE);
@@ -264,4 +305,5 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mNavigationView.getHeaderView(0).findViewById(R.id.customerHeader_container).setVisibility(View.GONE);
 
     }
+
 }

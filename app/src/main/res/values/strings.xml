@@ -25,7 +25,7 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="truck_description">وصف العربة</string>
-    <string name="trucName">اسم العربة</string>
+    <string name="truckName">اسم العربة</string>
     <string name="change_password">تغير كلمة المرور؟</string>
     <string name="truck_status">الحالة:</string>
     <string name="truckStatus_open">مفتوح</string>
@@ -37,5 +37,16 @@
     <string name="reserve">أحجز العربة</string>
     <string name="order">اطلب الآن</string>
     <string name="comunication">وسائل التواصل</string>
+    <string name="register_inputEmpty">الرجاء إدخال جميع البيانات</string>
+    <string name="register_passwordLength">كلمة المرور يجب ألا تقل عن 6 خانات</string>
+    <string name="register_notSamePassword">الرجاء التحقق من أن كلمة المرور متطابقة</string>
+    <string name="register_invalidEmail">الرجاء إدخال بريد إلكتروني صحيح</string>
+    <string name="register_invalidPhone">الرجاء إدخال رقم جوال صحيح</string>
+    <string name="serverNotResponse">الخادم لا يستجيب حاول لاحقاً</string>
+    <string name="register_completed">تم تسجيل الحساب بنجاح</string>
+    <string name="email_isUsed">البريد الإلكتروني مستخدم مسبقاً</string>
+    <string name="username_isUsed">اسم المستخدم المدخل موجود مسبقاً</string>
+    <string name="register_userInvalid">اسم المستخدم يجب أن يبدأ بحرف.</string>
+    <string name="price_currency">SR</string>
 
 </resources>

@@ -14,4 +14,10 @@
         <item name="android:textStyle">bold</item>
     </style>
 
+    <style name="myEditText" parent="Base.V7.Widget.AppCompat.EditText">
+        <item name="android:padding">8dp</item>
+        <item name="background">@drawable/edit_text_border</item>
+        <item name="android:background">@drawable/edit_text_border</item>
+    </style>
+
 </resources>

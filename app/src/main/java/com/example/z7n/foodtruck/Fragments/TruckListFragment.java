@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.z7n.foodtruck.Activity.MainActivity;
 import com.example.z7n.foodtruck.R;
 import com.example.z7n.foodtruck.Truck;
 import com.squareup.picasso.Picasso;
@@ -113,6 +114,14 @@ public class TruckListFragment extends Fragment {
                  truckName = itemView.findViewById(R.id.truckItem_truckName);
                  truckImage = itemView.findViewById(R.id.truckItem_ImageView);
                  distanceText = itemView.findViewById(R.id.truckItem_distanceTextView);
+                 itemView.setOnClickListener(new View.OnClickListener() {
+                     @Override
+                     public void onClick(View v) {
+                         MainActivity ma = ((MainActivity)getActivity());
+                         if(ma != null)
+                            ma.setFragment(new TruckPageFragment(),true);
+                     }
+                 });
              }
 
              public void setTruckName(String name){

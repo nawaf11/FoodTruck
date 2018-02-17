@@ -40,7 +40,7 @@ public class LoginFragment extends Fragment{
                     LoginState loginState = new LoginState();
                     Truck truck = getFakeTruck();
                     loginState.setTruck(truck);
-                    ((MainActivity)getActivity()).setLoginState(loginState,true);
+                    ((MainActivity)getActivity()).setLoginState(loginState);
 
                     getActivity().getSupportFragmentManager().beginTransaction()
                             .replace(R.id.fragment_container,new TruckListFragment()).commit();

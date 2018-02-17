@@ -60,6 +60,13 @@ public class TruckProfileFragment extends Fragment {
         truckDescription_editText = parentView.findViewById(R.id.truckProfile_truckDescriptionEdit);
         truckImageView = parentView.findViewById(R.id.truckProfile_truckImage);
         changePassword = parentView.findViewById(R.id.truckProfile_changePassword);
+
+        truckImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((MainActivity) getActivity()).setFragment(new MenuFragment(),true);
+            }
+        });
     }
 
     private void initTruck() {
@@ -82,6 +89,7 @@ public class TruckProfileFragment extends Fragment {
         phone_editText.setText(truck.getPhoneNumber());
         truckName_editText.setText(truck.getTruckName());
         truckDescription_editText.setText(truck.getDescription());
+
     }
 
 }
