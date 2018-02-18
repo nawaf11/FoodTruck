@@ -8,6 +8,7 @@
 <android.support.constraint.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:paddingBottom="16dp"
     >
 
     <TextView
@@ -39,50 +40,88 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/truckProfile_truckHeaderName" />
 
+    <TextView
+        android:id="@+id/register_username_TxtView"
+        style="@style/myText1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/Register_user_name"
+        app:layout_constraintStart_toStartOf="@+id/truckProfile_truckUsernameEdit"
+        app:layout_constraintTop_toBottomOf="@id/truckProfile_truckImage"
+        android:layout_marginLeft="8dp" />
     <EditText
         android:id="@+id/truckProfile_truckUsernameEdit"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
-        android:layout_marginTop="16dp"
-        android:inputType="text"
+        android:layout_marginTop="8dp"
+        android:inputType="textPersonName"
+        android:focusable="false"
         style="@style/myEditText"
         android:gravity="center"
         android:hint="@string/Register_user_name"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/truckProfile_truckImage" />
+        app:layout_constraintTop_toBottomOf="@+id/register_username_TxtView" />
+
+    <TextView
+        android:id="@+id/register_email_textView"
+        style="@style/myText1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="8dp"
+        android:text="@string/login_Email"
+        app:layout_constraintStart_toStartOf="@+id/truckProfile_truckEmailEdit"
+        app:layout_constraintTop_toBottomOf="@+id/truckProfile_truckUsernameEdit"
+        android:layout_marginLeft="8dp" />
 
     <EditText
         android:id="@+id/truckProfile_truckEmailEdit"
+        style="@style/myEditText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        style="@style/myEditText"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
-        android:layout_marginTop="16dp"
-        android:inputType="textEmailAddress"
+        android:layout_marginTop="8dp"
+        android:focusable="false"
         android:gravity="center"
         android:hint="@string/login_Email"
+        android:inputType="textEmailAddress"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/truckProfile_truckUsernameEdit" />
+        app:layout_constraintTop_toBottomOf="@+id/register_email_textView" />
+
+    <TextView
+        android:id="@+id/register_phone_textView"
+        style="@style/myText1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/phonenumberRegister"
+        app:layout_constraintStart_toStartOf="@+id/truckProfile_truckPhoneEdit"
+        app:layout_constraintTop_toBottomOf="@+id/truckProfile_truckEmailEdit"
+        android:layout_marginLeft="8dp" />
 
     <EditText
         android:id="@+id/truckProfile_truckPhoneEdit"
+        style="@style/myEditText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        style="@style/myEditText"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
-        android:layout_marginTop="16dp"
-        android:inputType="phone"
+        android:layout_marginTop="8dp"
+        android:focusable="false"
         android:gravity="center"
         android:hint="@string/phonenumberRegister"
+        android:inputType="phone"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/truckProfile_truckEmailEdit" />
+        app:layout_constraintTop_toBottomOf="@+id/register_phone_textView" />
 
     <TextView
         android:id="@+id/truckProfile_changePassword"
@@ -98,36 +137,59 @@
         app:layout_constraintTop_toBottomOf="@+id/truckProfile_truckPhoneEdit"
         android:layout_marginLeft="16dp" />
 
+    <TextView
+        android:id="@+id/register_truckName_textView"
+        style="@style/myText1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/truckName"
+        app:layout_constraintStart_toStartOf="@+id/truckProfile_truckNameEdit"
+        app:layout_constraintTop_toBottomOf="@+id/truckProfile_changePassword"
+        android:layout_marginLeft="8dp" />
+
     <EditText
         android:id="@+id/truckProfile_truckNameEdit"
+        style="@style/myEditText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        style="@style/myEditText"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:gravity="center"
         android:hint="@string/truckName"
         android:inputType="text"
         app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/truckProfile_changePassword" />
+        app:layout_constraintTop_toBottomOf="@+id/register_truckName_textView" />
+
+    <TextView
+        android:id="@+id/register_truckDescription_textView"
+        style="@style/myText1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/truck_description"
+        app:layout_constraintStart_toStartOf="@+id/truckProfile_truckDescriptionEdit"
+        app:layout_constraintTop_toBottomOf="@+id/truckProfile_truckNameEdit" />
 
     <EditText
         android:id="@+id/truckProfile_truckDescriptionEdit"
+        style="@style/myEditText"
         android:layout_width="0dp"
         android:layout_height="@dimen/truckDescription_editText_Height"
-        style="@style/myEditText"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:gravity="center"
         android:hint="@string/truck_description"
         android:inputType="textMultiLine"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/truckProfile_truckNameEdit" />
+        app:layout_constraintTop_toBottomOf="@+id/register_truckDescription_textView" />
 
 </android.support.constraint.ConstraintLayout>
 

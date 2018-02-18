@@ -23,9 +23,13 @@ public class Truck {
 
     private Location location; // current location of the truck.
 
-    public Truck(String emailOrUsername, String password) {
-        // user insert email/user then other data pulled from the server.
+    public Truck(){
 
+    }
+
+    public Truck getTruckFromServer(String emailOrUsername, String password){
+        // TODO: ....
+        return null;
     }
 
     public static String getStatusText(Context context, boolean isOpen){

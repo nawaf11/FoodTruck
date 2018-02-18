@@ -2,6 +2,7 @@ package com.example.z7n.foodtruck;
 
 /**
  * Created by z7n on 2/16/2018.
+
  */
 
 public class PHPHelper {
@@ -10,9 +11,12 @@ public class PHPHelper {
 
     public static class Truck {
         public static final String insert = DOMAIN_NAME + "php/register_truck.php";
+        public static final String login = DOMAIN_NAME +  "php/login_truck.php";
     }
 
     public static class Customer {
         public static final String insert = DOMAIN_NAME + "php/register_customer.php";
+        public static final String login = DOMAIN_NAME +  "php/login_customer.php";
+
     }
 }

@@ -20,14 +20,21 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import com.androidnetworking.AndroidNetworking;
+import com.androidnetworking.error.ANError;
+import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.example.z7n.foodtruck.Fragments.LoginFragment;
 import com.example.z7n.foodtruck.Fragments.MapFragment;
 import com.example.z7n.foodtruck.Fragments.RegisterFragment;
 import com.example.z7n.foodtruck.Fragments.TruckListFragment;
 import com.example.z7n.foodtruck.Fragments.TruckProfileFragment;
 import com.example.z7n.foodtruck.LoginState;
+import com.example.z7n.foodtruck.PHPHelper;
 import com.example.z7n.foodtruck.R;
+import com.example.z7n.foodtruck.SHP;
 import com.example.z7n.foodtruck.Truck;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -61,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.activity_main);
         AndroidNetworking.initialize(getApplicationContext());
 
-        loginState = new LoginState();
+        loginState = getRememberLoginState();
 
         setupNavigationView();
 
@@ -103,6 +110,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
            @Override
            public void onClick(View v) {
                loginState = new LoginState();
+               SHP.Login.clear(getBaseContext());
                loginChangeVisitorHeader();
                setFragment(new TruckListFragment());
                mDrawerLayout.closeDrawer(GravityCompat.START);
@@ -267,13 +275,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setFragment(fragment,false);
     }
 
-    public boolean isNavFragment(Fragment f) {
+    private boolean isNavFragment(Fragment f) {
         return f instanceof TruckListFragment ||
                 f instanceof MapFragment ||
                 f instanceof TruckProfileFragment;
     }
-
-
 
     private void loginChangeTruckHeader(Truck truck){
         mNavigationView.getHeaderView(0).findViewById(R.id.truckHeader_container).setVisibility(View.VISIBLE);
@@ -303,7 +309,39 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mNavigationView.getHeaderView(0).findViewById(R.id.visitorHeader_container).setVisibility(View.VISIBLE);
         mNavigationView.getHeaderView(0).findViewById(R.id.truckHeader_container).setVisibility(View.GONE);
         mNavigationView.getHeaderView(0).findViewById(R.id.customerHeader_container).setVisibility(View.GONE);
-
     }
 
+    public LoginState getRememberLoginState() {
+        if(SHP.Login.getUsernameOrEmail(this) == null ||
+                SHP.Login.getPassword(this) == null) // no remembered login
+            return new LoginState();
+
+        // ========= There is remember login =============
+        String link = (SHP.Login.isTruck(getBaseContext())) ? PHPHelper.Truck.login : PHPHelper.Customer.login;
+        AndroidNetworking.post(link)
+                .addBodyParameter("uid", SHP.Login.getUsernameOrEmail(this))
+                .addBodyParameter("password", SHP.Login.getPassword(this))
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            boolean isLoginSuccess = response.getString("state").equals("success");
+                            if(!isLoginSuccess){ // Error: username/password not match.
+                                return;
+                            }
+                            LoginState.CreateLogin      // setLogin state to MainActivity Truck/Customer
+                                    (MainActivity.this, response, SHP.Login.isTruck(getBaseContext()));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        Log.d("server-response",anError.getErrorDetail());
+                    }
+                });
+        return null;
+    }
 }

@@ -24,6 +24,7 @@ import com.example.z7n.foodtruck.Activity.MainActivity;
 import com.example.z7n.foodtruck.LoginState;
 import com.example.z7n.foodtruck.PHPHelper;
 import com.example.z7n.foodtruck.R;
+import com.example.z7n.foodtruck.SHP;
 import com.example.z7n.foodtruck.Truck;
 
 import org.json.JSONException;
@@ -180,22 +181,32 @@ public class RegisterFragment extends Fragment {
             return;
 
         String err_msg = response.getString("error_msg");
-        Log.d("server-response",err_msg);
 
-        if (err_msg.contains("Duplicate") && err_msg.contains("email"))
-            Toast.makeText(getContext(), R.string.email_isUsed, Toast.LENGTH_LONG).show();
+        try {
+            if (err_msg.contains("Duplicate") && err_msg.contains("email"))
+                Toast.makeText(getContext(), R.string.email_isUsed, Toast.LENGTH_LONG).show();
 
-        else if (err_msg.contains("Duplicate") && err_msg.contains("username"))
-            Toast.makeText(getContext(), R.string.username_isUsed, Toast.LENGTH_LONG).show();
-
+            else if (err_msg.contains("Duplicate") && err_msg.contains("username"))
+                Toast.makeText(getContext(), R.string.username_isUsed, Toast.LENGTH_LONG).show();
+        } catch (NullPointerException e){
+            /*
+             java.lang.NullPointerException: Attempt to invoke virtual method 'android.content.res.Resources android.content.Context.getResources()' on a null object reference
+             at android.widget.Toast.makeText(Toast.java:531)
+             at com.example.z7n.foodtruck.Fragments.RegisterFragment.responseError(RegisterFragment.java:189
+             */
+        }
     }
 
     private void responseSuccess(){
         Toast.makeText(getContext(), R.string.register_completed, Toast.LENGTH_LONG).show();
         LoginState loginState = new LoginState();
-        Truck truck = new Truck(editText_username.getText().toString(),"123456");
+        Truck truck = new Truck();
         truck.setTruckName(editText_truckName.getText().toString());
         truck.setUserName(editText_username.getText().toString());
+        truck.setDescription(editText_truckDescription.getText().toString());
+        truck.setEmail(editText_email.getText().toString());
+        truck.setPhoneNumber(editText_phoneNumber.getText().toString());
+
 
         loginState.setTruck(truck);
         if(getActivity() == null)
@@ -203,9 +214,17 @@ public class RegisterFragment extends Fragment {
 
         MainActivity activity = (MainActivity) getActivity();
         activity.setLoginState(loginState);
+        rememberUser();
         activity.setFragment(new TruckListFragment());
     }
 
+    private void rememberUser(){
+        SHP.Login.setUsernameOrEmail(getContext(),
+                editText_username.getText().toString(),radioButton_asTruck.isChecked());
+
+        SHP.Login.setPassword(getContext(), editText_password.getText().toString());
+
+    }
     private boolean isThereError(){
         // =========== Error Check ==================
         if(isInputEmpty()) {

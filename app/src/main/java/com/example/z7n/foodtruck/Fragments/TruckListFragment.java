@@ -66,7 +66,8 @@ public class TruckListFragment extends Fragment {
     private ArrayList<Truck> getFakeList(){
         ArrayList<Truck> arr = new ArrayList<>();
         for (int i=0; i < 20 ; i++){
-            Truck truck = new Truck("rr","rrr");
+            Truck truck = new Truck();
+            truck.setUserName("burgerhq"+i);
             truck.setTruckId(1);
             truck.setTruckName("Burger HQ"+ i);
             Location location = new Location("Truck "+i);

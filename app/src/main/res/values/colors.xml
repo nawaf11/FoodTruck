@@ -5,7 +5,7 @@
     <!--<color name="colorPrimaryLight">#6e28ff</color>-->
     <!--<color name="colorAccent">#36a41a</color>-->
 
-    <color name="colorPrimaryDark">#dcc600</color>
+    <color name="colorPrimaryDark">#292929</color> <!-- dcc600 -->
     <color name="colorPrimary">#f9e112</color>  <!--ffe712-->
     <color name="colorPrimaryLight">#ffef5e</color>
     <color name="colorAccent">#29ca44</color>

@@ -48,5 +48,7 @@
     <string name="username_isUsed">اسم المستخدم المدخل موجود مسبقاً</string>
     <string name="register_userInvalid">اسم المستخدم يجب أن يبدأ بحرف.</string>
     <string name="price_currency">SR</string>
+    <string name="login_failed">اسم المستخدم أو كلمة المرور غير صحيحة</string>
+    <string name="login_success">تم تسجيل الدخول بنجاح</string>
 
 </resources>
