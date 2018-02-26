@@ -50,5 +50,8 @@
     <string name="price_currency">SR</string>
     <string name="login_failed">اسم المستخدم أو كلمة المرور غير صحيحة</string>
     <string name="login_success">تم تسجيل الدخول بنجاح</string>
+    <string name="rate">قيم</string>
+    <string name="rating">تقييم</string>
+    <string name="add_to_favorate">add_tofavorate</string>
 
 </resources>
