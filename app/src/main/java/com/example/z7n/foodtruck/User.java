@@ -4,6 +4,8 @@ import android.location.Location;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.util.List;
+
 /**
  * Created by nasser on 2/12/2018.
  class for the User.
@@ -12,9 +14,10 @@ import com.google.android.gms.maps.model.LatLng;
 public class User {
     private long id; // This random auto-incremented number from database
     private String userName;
-
+    private List<String> favorateTrucks;
     private String email;
     private String phoneNumber;
+
 
 
     public User(String emailOrUsername, String password) {
@@ -22,6 +25,12 @@ public class User {
 
     }
 
+    public void addToFavorate(String id){
+        favorateTrucks.add(id);
+    }
+    public void removeFromFavroate(String id){
+       favorateTrucks.remove(id);
+        }
 
     public long geUserId() {
         return id;

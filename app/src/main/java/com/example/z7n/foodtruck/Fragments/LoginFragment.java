@@ -76,6 +76,8 @@ public class LoginFragment extends Fragment{
         });
 
         loginButton = parentView.findViewById(R.id.login_signIn_button);
+
+        //نواف غيرت هنا شيء بالغلط شييك عليه
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

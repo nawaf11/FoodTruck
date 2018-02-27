@@ -2,6 +2,7 @@ package com.example.z7n.foodtruck;
 
 import android.content.Context;
 import android.location.Location;
+import android.view.View;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -11,7 +12,7 @@ import com.google.android.gms.maps.model.LatLng;
  */
 
 public class Truck {
-    private long id; // This random auto-incremented number from database
+    private String id; // This random auto-incremented number from database
     private String userName;
     private String truckName;
     private String email;
@@ -20,6 +21,8 @@ public class Truck {
     private boolean isOpen=false; // On , Off
     private boolean isAcceptOrder=false; // is the truck want accept order from customer.
     private double rate; // ex: 4.5
+    private int rateNum;
+
 
     private Location location; // current location of the truck.
 
@@ -39,12 +42,12 @@ public class Truck {
         return context.getResources().getString(R.string.truckStatus_closed);
     }
 
-    public long getTruckId() {
+    public String getTruckId() {
         return id;
     }
 
     public void setTruckId(long truckId) {
-        this.id = truckId;
+        this.id.equals(truckId) ;
     }
 
     public String getUserName() {
@@ -95,7 +98,7 @@ public class Truck {
         this.isOpen = isOpen;
     }
 
-    public String getStatusText(Context context){
+    public String getStatusText(View context){
         if (isOpen)
             return context.getResources().getString(R.string.truckStatus_open);
 
@@ -115,7 +118,9 @@ public class Truck {
     }
 
     public void setRate(double rate) {
-        this.rate = rate;
+        this.rate =+ rate;
+        rateNum++;
+        this.rate =this.rate/rateNum;
     }
 
     public Location getLocation() {
