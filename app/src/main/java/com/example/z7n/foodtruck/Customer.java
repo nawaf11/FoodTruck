@@ -8,10 +8,10 @@ import java.util.List;
 
 /**
  * Created by nasser on 2/12/2018.
- class for the User.
+ class for the Customer.
  */
 
-public class User {
+public class Customer {
     private long id; // This random auto-incremented number from database
     private String userName;
     private List<String> favorateTrucks;
@@ -20,8 +20,7 @@ public class User {
 
 
 
-    public User(String emailOrUsername, String password) {
-        // user insert email/user then other data pulled from the server.
+    public Customer() {
 
     }
 

@@ -1,9 +1,6 @@
 package com.example.z7n.foodtruck;
 
 import android.support.annotation.Nullable;
-import android.util.Log;
-
-import com.example.z7n.foodtruck.Activity.MainActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;

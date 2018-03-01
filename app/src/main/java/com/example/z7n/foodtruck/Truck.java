@@ -30,10 +30,6 @@ public class Truck {
 
     }
 
-    public Truck getTruckFromServer(String emailOrUsername, String password){
-        // TODO: ....
-        return null;
-    }
 
     public static String getStatusText(Context context, boolean isOpen){
         if (isOpen)
@@ -47,7 +43,7 @@ public class Truck {
     }
 
     public void setTruckId(long truckId) {
-        this.id.equals(truckId) ;
+        this.id = String.valueOf(true);
     }
 
     public String getUserName() {

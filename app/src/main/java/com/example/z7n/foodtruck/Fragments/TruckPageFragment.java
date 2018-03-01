@@ -13,11 +13,9 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
-import com.example.z7n.foodtruck.Activity.MainActivity;
-import com.example.z7n.foodtruck.LoginState;
 import com.example.z7n.foodtruck.R;
 import com.example.z7n.foodtruck.Truck;
-import com.example.z7n.foodtruck.User;
+import com.example.z7n.foodtruck.Customer;
 
 /**
  */
@@ -26,7 +24,7 @@ public class TruckPageFragment extends Fragment {
 
     private View parentView;
     private Truck truck;
-    private User    user;
+    private Customer customer;
     private  TextView truckName;
     private RatingBar userRate;
     private TextView  truckRateNum;
@@ -61,6 +59,7 @@ public class TruckPageFragment extends Fragment {
         truckNum=parentView.findViewById(R.id.number);
         truckEmail=parentView.findViewById(R.id.email);
         truckrate=parentView.findViewById(R.id.rateNum);
+        truckState = parentView.findViewById(R.id.truckstate);
 
         initTruck();
         initViews();
@@ -90,30 +89,30 @@ public class TruckPageFragment extends Fragment {
         truckEmail.setText(truck.getEmail());
         truckState.setText(truck.getStatusText(parentView));
 
-        rateBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-             truck.setRate(userRate.getRating());
-            }
-
-
-        });
-        nofav.setOnClickListener(new View.OnClickListener() {
-        public void onClick(View v){
-            user.addToFavorate(truck.getTruckId());
-            nofav=fav;
-
-        }
-
-        });
-        fav.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v){
-                user.removeFromFavroate(truck.getTruckId());
-                nofav=fav;
-
-            }
-
-        });
+//        rateBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//             truck.setRate(userRate.getRating());
+//            }
+//
+//
+//        });
+//        nofav.setOnClickListener(new View.OnClickListener() {
+//        public void onClick(View v){
+//            customer.addToFavorate(truck.getTruckId());
+//            nofav=fav;
+//
+//        }
+//
+//        });
+//        fav.setOnClickListener(new View.OnClickListener() {
+//            public void onClick(View v){
+//                customer.removeFromFavroate(truck.getTruckId());
+//                nofav=fav;
+//
+//            }
+//
+//        });
       //  truckState.setText(truck.getStatusText(Stutes));
 
     }
@@ -122,7 +121,7 @@ public class TruckPageFragment extends Fragment {
 
 
 
-        String id = getArguments().getString("truckId");
+//        String id = getArguments().getString("truckId");
 
         Truck t = new Truck();
         t.setTruckName("Brvggfeg");

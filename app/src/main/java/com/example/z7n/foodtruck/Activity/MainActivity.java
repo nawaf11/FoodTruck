@@ -183,12 +183,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 if(isChecked) {
                     statusSwitch.setText(Truck.getStatusText(getBaseContext(),true));
                     statusSwitch.setTextColor(getResources().getColor((R.color.truckStatus_green)));
-                    loginState.getTruck().updateTruckStatusTask(MainActivity.this,true);
+                    //loginState.getTruck().updateTruckStatusTask(MainActivity.this,true);
                 }
                 else {
                     statusSwitch.setText(Truck.getStatusText(getBaseContext(),false));
                     statusSwitch.setTextColor(getResources().getColor((R.color.truckStatus_red)));
-                    loginState.getTruck().updateTruckStatusTask(MainActivity.this,false);
+                    //loginState.getTruck().updateTruckStatusTask(MainActivity.this,false);
                 }
             }
         });
