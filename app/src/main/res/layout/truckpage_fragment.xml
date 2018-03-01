@@ -122,7 +122,6 @@
         android:contentDescription="@string/login_Email"
         app:layout_constraintEnd_toStartOf="@+id/imageView3"
         app:layout_constraintTop_toBottomOf="@+id/textView10"
-        app:srcCompat="@drawable/emails"
         android:layout_marginRight="50dp" />
 
     <ImageView
@@ -134,7 +133,6 @@
         android:contentDescription="@string/app_name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView10"
-        app:srcCompat="@drawable/whatsapp"
         android:layout_marginRight="100dp" />
 
     <TextView
@@ -201,7 +199,7 @@
         android:contentDescription="@string/add_to_favorate"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/nofav" android:layout_marginStart="16dp" />
+        android:layout_marginStart="16dp" />
 
     <ImageView
         android:id="@+id/ratestar"

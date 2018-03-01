@@ -1,7 +1,7 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
@@ -19,5 +19,12 @@
         <item name="background">@drawable/edit_text_border</item>
         <item name="android:background">@drawable/edit_text_border</item>
     </style>
+
+    <style name="myEditTextClosed" parent="Base.V7.Widget.AppCompat.EditText">
+        <item name="android:padding">8dp</item>
+        <item name="background">@drawable/edit_text_border_closed</item>
+        <item name="android:background">@drawable/edit_text_border_closed</item>
+    </style>
+
 
 </resources>

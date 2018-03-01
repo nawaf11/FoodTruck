@@ -6,4 +6,9 @@
     <dimen name="navigationHeader_truckName_size">16sp</dimen>
     <dimen name="truckDescription_editText_Height">140dp</dimen>
     <dimen name="product_item_imageSize">80dp</dimen>
+    <dimen name="navigationHeader_customerName_size">@dimen/navigationHeader_truckName_size</dimen>
+    <dimen name="button_padding">16dp</dimen>
+    <dimen name="floatingButton_size">65dp</dimen>
+    <dimen name="productItem_addIcon_imageSize">30dp</dimen>
+    <dimen name="topMargin_bwProductItems">16dp</dimen>
 </resources>

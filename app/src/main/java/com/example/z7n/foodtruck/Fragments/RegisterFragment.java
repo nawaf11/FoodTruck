@@ -21,6 +21,7 @@ import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.androidnetworking.interfaces.StringRequestListener;
 import com.example.z7n.foodtruck.Activity.MainActivity;
+import com.example.z7n.foodtruck.Customer;
 import com.example.z7n.foodtruck.LoginState;
 import com.example.z7n.foodtruck.PHPHelper;
 import com.example.z7n.foodtruck.R;
@@ -55,6 +56,14 @@ public class RegisterFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
 
+        // ========== MainActivity needs part ====================
+        if(getActivity() != null) {
+            MainActivity mc = (MainActivity) getActivity();
+            mc.setToolbarTitle(R.string.navigationHeader_createAccount);
+            mc.hideMenuItems();
+        }
+        // ========== MainActivity needs part ====================
+
          parentView = inflater.inflate(R.layout.truck_register_fragment,container,false);
          initViews();
 
@@ -74,6 +83,8 @@ public class RegisterFragment extends Fragment {
         editText_phoneNumber = parentView.findViewById(R.id.editText_phoneNumber);
         editText_truckName = parentView.findViewById(R.id.editText_truckName);
         editText_truckDescription = parentView.findViewById(R.id.editText_truckDescription);
+        String optinalText = getResources().getString(R.string.optional);
+        editText_truckDescription.setHint(editText_truckDescription.getHint() + " " + optinalText);
 
 
         radioButton_asTruck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -115,6 +126,7 @@ public class RegisterFragment extends Fragment {
 
         AndroidNetworking.post(PHPHelper.Customer.insert)
                 .addBodyParameter("username",editText_username.getText().toString())
+                .addBodyParameter("email",editText_email.getText().toString())
                 .addBodyParameter("password",editText_password.getText().toString())
                 .addBodyParameter("phone",editText_phoneNumber.getText().toString())
                 .build()
@@ -124,11 +136,12 @@ public class RegisterFragment extends Fragment {
                         try {
                             if(response.getString("state")!=null &&
                                     response.getString("state").equals("success")) {
-                                responseSuccess();
+                                responseSuccess(response);
                             } else // state: error
                                 responseError(response);
                         } catch (JSONException e) {
                             e.printStackTrace();
+                            Toast.makeText(getContext(), R.string.serverNotResponse,Toast.LENGTH_SHORT).show();
                         }
 
                     }
@@ -159,11 +172,12 @@ public class RegisterFragment extends Fragment {
                         try {
                             if(response.getString("state")!=null &&
                                     response.getString("state").equals("success")) {
-                                responseSuccess();
+                                responseSuccess(response);
                             } else // state: error
                                 responseError(response);
                         } catch (JSONException e) {
                             e.printStackTrace();
+                            Toast.makeText(getContext(), R.string.unknownError,Toast.LENGTH_SHORT).show();
                         }
 
                     }
@@ -197,18 +211,11 @@ public class RegisterFragment extends Fragment {
         }
     }
 
-    private void responseSuccess(){
+    public void responseSuccess(JSONObject jsonResponse) throws JSONException {
         Toast.makeText(getContext(), R.string.register_completed, Toast.LENGTH_LONG).show();
-        LoginState loginState = new LoginState();
-        Truck truck = new Truck();
-        truck.setTruckName(editText_truckName.getText().toString());
-        truck.setUserName(editText_username.getText().toString());
-        truck.setDescription(editText_truckDescription.getText().toString());
-        truck.setEmail(editText_email.getText().toString());
-        truck.setPhoneNumber(editText_phoneNumber.getText().toString());
+        LoginState loginState = LoginState.CreateLogin(jsonResponse, radioButton_asTruck.isChecked() );
 
 
-        loginState.setTruck(truck);
         if(getActivity() == null)
             return;
 
@@ -225,6 +232,7 @@ public class RegisterFragment extends Fragment {
         SHP.Login.setPassword(getContext(), editText_password.getText().toString());
 
     }
+
     private boolean isThereError(){
         // =========== Error Check ==================
         if(isInputEmpty()) {
@@ -248,8 +256,7 @@ public class RegisterFragment extends Fragment {
             return true;
         }
 
-        if(radioButton_asTruck.isChecked() &&
-                !Patterns.EMAIL_ADDRESS.matcher(editText_email.getText().toString()).matches()){
+        if(!Patterns.EMAIL_ADDRESS.matcher(editText_email.getText().toString()).matches()){
             Toast.makeText(getContext(),getResources().getString(R.string.register_invalidEmail),Toast.LENGTH_LONG).show();
             return true;
         }
@@ -272,6 +279,7 @@ public class RegisterFragment extends Fragment {
 
         if(radioButton_asCustomer.isChecked()){
             return     TextUtils.isEmpty(editText_username.getText())
+                    || TextUtils.isEmpty(editText_email.getText())
                     || TextUtils.isEmpty(editText_password.getText())
                     || TextUtils.isEmpty(editText_passwordConfirm.getText())
                     || TextUtils.isEmpty(editText_phoneNumber.getText());
@@ -282,15 +290,13 @@ public class RegisterFragment extends Fragment {
                 || TextUtils.isEmpty(editText_password.getText())
                 || TextUtils.isEmpty(editText_passwordConfirm.getText())
                 || TextUtils.isEmpty(editText_phoneNumber.getText())
-                || TextUtils.isEmpty(editText_truckName.getText())
-                || TextUtils.isEmpty(editText_truckDescription.getText());
+                || TextUtils.isEmpty(editText_truckName.getText());
 
     }
 
     private void showTruckForm(boolean isTruck) {
         int action = (isTruck) ? View.VISIBLE : View.GONE;
 
-            parentView.findViewById(R.id.editText_email).setVisibility(action);
             parentView.findViewById(R.id.editText_truckName).setVisibility(action);
             parentView.findViewById(R.id.editText_truckDescription).setVisibility(action);
 

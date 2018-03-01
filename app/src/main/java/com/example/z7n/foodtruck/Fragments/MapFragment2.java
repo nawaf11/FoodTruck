@@ -2,11 +2,14 @@ package com.example.z7n.foodtruck.Fragments;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -22,14 +25,19 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.z7n.foodtruck.Activity.MainActivity;
+import com.example.z7n.foodtruck.ILocationClient;
 import com.example.z7n.foodtruck.R;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import static android.content.Context.LOCATION_SERVICE;
 
@@ -38,11 +46,11 @@ import static android.content.Context.LOCATION_SERVICE;
 
  */
 
-public class MapFragment extends Fragment implements OnMapReadyCallback, LocationListener {
+public class MapFragment2 extends Fragment implements OnMapReadyCallback, ILocationClient {
     private MapView mapView;
     private GoogleMap googleMap;
     private LocationManager locationManager;
-    private boolean comeFromGpsActivity = false;
+    private boolean comeFromGpsActivity;
 
     @SuppressLint("MissingPermission")
     @Nullable
@@ -103,63 +111,62 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
         if (!enabled) {
             new GpsAlertDialog(getContext()).show();
             comeFromGpsActivity = true;
-        } else if(permissionsGranted) { // Enabled
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
-    }
+        }
+        else
+            moveCameraToUserLocation();
 
     }
 
     private void setTruckMarker() {
+        final LatLng riyadh = new LatLng(24.7136, 46.6753);
 
-        LatLng riyadh = new LatLng(24.7136, 46.6753);
-        googleMap.addMarker(new MarkerOptions().position(riyadh).title("Marker in Riyadh"));
+        final MarkerOptions markerOpt = new MarkerOptions().position(riyadh).title("I am marker")
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+        googleMap.addMarker(markerOpt);
+
     }
 
-    @SuppressLint("MissingPermission")
-    @Override
+
     public void onResume() {
         super.onResume();
-        if (comeFromGpsActivity){
+
+        if (comeFromGpsActivity && getActivity() != null && getActivity() instanceof MainActivity) {
             comeFromGpsActivity = false;
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
+            moveCameraToUserLocation();;
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-            if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+            if (getContext() != null &&
+                    ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
                     == PackageManager.PERMISSION_GRANTED &&
                     ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
                             == PackageManager.PERMISSION_GRANTED) {
                 googleMap.setMyLocationEnabled(true);
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
-                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
+                moveCameraToUserLocation();
             }
     }
 
     @Override
-    public void onLocationChanged(Location location) {
-        CameraPosition cameraPosition = CameraPosition.builder().target(new LatLng(location.getLatitude(),
-                location.getLongitude())).zoom(12).build();
-        Log.d("traceGPS",location.getLatitude()+"");
-        googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+    public void onLocationUpdated(LocationResult locationResult) {
+        if(googleMap == null)
+            return;
+
+       // moveMapCameraTo(locationResult.getLastLocation());
     }
 
-    @Override
-    public void onStatusChanged(String s, int i, Bundle bundle) {
+    private void moveCameraToUserLocation(){
+        Log.d("dfdsf","OUT");
+        if(getActivity() != null && getActivity() instanceof MainActivity &&
+                ((MainActivity) getActivity()).getUserLocation() != null) {
+            Log.d("dfdsf","IN");
 
-    }
-
-    @Override
-    public void onProviderEnabled(String s) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String s) {
-
+            Location location = ((MainActivity) getActivity()).getUserLocation();
+            LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+            CameraPosition cameraPosition = CameraPosition.builder().target(latLng).zoom(12).build();
+            googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        }
     }
 
     private class GpsAlertDialog extends AlertDialog implements AlertDialog.OnClickListener {
@@ -170,7 +177,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
             setMessage(getContext().getString(R.string.gpsAlert_message));
             setButton(BUTTON_POSITIVE,getContext().getString(R.string.gpsAlert_positiveButton), this);
             setButton(BUTTON_NEGATIVE,getContext().getString(R.string.gpsAlert_negativeButton), this);
-
         }
 
 

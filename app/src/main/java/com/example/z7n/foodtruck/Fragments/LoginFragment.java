@@ -45,6 +45,14 @@ public class LoginFragment extends Fragment{
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
+        // ========== MainActivity needs part ====================
+        if(getActivity() != null) {
+            MainActivity mc = (MainActivity) getActivity();
+            mc.setToolbarTitle(R.string.navigationBar_signIn);
+            mc.hideMenuItems();
+        }
+        // ========== MainActivity needs part ====================
+
         parentView = inflater.inflate(R.layout.login_fragment,container,false);
         initViews();
 
@@ -66,6 +74,7 @@ public class LoginFragment extends Fragment{
             }
         });
 
+        radioButton_asCustomer.setChecked(true);
         radioButton_asCustomer.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -132,9 +141,8 @@ public class LoginFragment extends Fragment{
             return;
 
         MainActivity activity = ((MainActivity)getActivity());
-
-        LoginState.CreateLogin      // setLogin state to MainActivity Truck/Customer
-                (activity,response,radioButton_asTruck.isChecked());
+        LoginState loginState = LoginState.CreateLogin(response,radioButton_asTruck.isChecked());
+        activity.setLoginState(loginState);
 
         Toast.makeText(getContext(),R.string.login_success,Toast.LENGTH_LONG).show();
         rememberUser();

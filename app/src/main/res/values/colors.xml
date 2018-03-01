@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!--<color name="colorPrimary">#340c86</color>-->
-    <!--<color name="colorPrimaryDark">#1d0058</color>-->
-    <!--<color name="colorPrimaryLight">#6e28ff</color>-->
-    <!--<color name="colorAccent">#36a41a</color>-->
 
+    <color name="colorDarkYellow">#dcc600</color>
     <color name="colorPrimaryDark">#292929</color> <!-- dcc600 -->
     <color name="colorPrimary">#f9e112</color>  <!--ffe712-->
     <color name="colorPrimaryLight">#ffef5e</color>
@@ -21,4 +18,13 @@
     <color name="editText_borderColor">#222</color>
     <color name="truckStatus_green">#35dc35</color>
     <color name="truckStatus_red">#dc2e37</color>
+    <color name="lightGray">#dedede</color>
 </resources>
+
+
+    <!--<color name="colorPrimary">#340c86</color>-->
+    <!--<color name="colorPrimaryDark">#1d0058</color>-->
+    <!--<color name="colorPrimaryLight">#6e28ff</color>-->
+    <!--<color name="colorAccent">#36a41a</color>-->
+
+    <!-- color name="colorPrimaryNice">#FFDA44</color -->

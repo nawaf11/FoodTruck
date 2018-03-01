@@ -9,7 +9,7 @@
         <item android:id="@+id/navigationBarItem_map" android:title="@string/toolbar_mapTitle"
             android:icon="@drawable/map" android:checkable="true"/>
 
-        <item android:id="@+id/navigationBarItem_profile" android:title="@string/toolbar_profileTitle"
+        <item android:id="@+id/navigationBarItem_profile" android:title="@string/the_truck"
             android:icon="@drawable/profile" android:checkable="true"/>
 
         <item android:id="@+id/navigationBarItem_notification" android:title="@string/toolbar_notificationTitle"

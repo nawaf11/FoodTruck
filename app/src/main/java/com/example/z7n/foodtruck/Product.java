@@ -1,5 +1,9 @@
 package com.example.z7n.foodtruck;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
+
 /**
  * Created by z7n on 2/7/2018.
  *
@@ -9,10 +13,13 @@ public class Product {
     private long id;
     private String name;
     private double price;
+    private String description = "";
 
-    public Product(long id){
-        this.id = id;
-        // ...
+    private Drawable image;
+    private Uri imageUri;
+
+    public Product(){
+
     }
 
 
@@ -38,5 +45,29 @@ public class Product {
 
     public void setPrice(double price) {
         this.price = price;
+    }
+
+    public Drawable getImage() {
+        return image;
+    }
+
+    public void setImage(Drawable image) {
+        this.image = image;
+    }
+
+    public Uri getImageUri() {
+        return imageUri;
+    }
+
+    public void setImageUri(Uri imageUri) {
+        this.imageUri = imageUri;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

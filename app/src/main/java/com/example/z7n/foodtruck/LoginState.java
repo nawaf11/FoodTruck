@@ -2,10 +2,8 @@ package com.example.z7n.foodtruck;
 
 import android.support.annotation.Nullable;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.example.z7n.foodtruck.Activity.MainActivity;
-import com.example.z7n.foodtruck.Fragments.TruckListFragment;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -18,7 +16,7 @@ public class LoginState {
     private boolean state; // if false: no one logged in (visitor).
     private boolean isTruck;
     private Truck truck; // if null: visitor/customer.
-    private User user;
+    private Customer customer;
 
     public LoginState(){
         state = false; // no one logged in.
@@ -32,7 +30,8 @@ public class LoginState {
 
     public @Nullable Truck getTruck(){return truck;}
 
-    public @Nullable User getUser(){return user;}
+    public @Nullable
+    Customer getCustomer(){return customer;}
 
     public void setTruck(Truck truck){
         this.truck = truck;
@@ -40,24 +39,15 @@ public class LoginState {
         this.isTruck = true;
     }
 
-    public void setUser(User user){
-        this.user = user;
+    public void setCustomer(Customer customer){
+        this.customer = customer;
         state =true;
         isTruck = false;
     }
 
-    public static void CreateLogin(MainActivity activity, JSONObject response, boolean isTruck) throws JSONException {
+    public static LoginState CreateLogin(JSONObject response, boolean isTruck) throws JSONException {
         JSONObject data = response.getJSONObject("data");
-
-        if(activity == null)
-            return;
-
-        LoginState loginState = (isTruck) ? asTruck(data) : asCustomer(data);
-        if (isTruck)
-            activity.setLoginState(loginState);
-        else
-            activity.setLoginState(loginState);
-
+        return (isTruck) ? asTruck(data) : asCustomer(data);
     }
 
     private static LoginState asTruck(JSONObject data) throws JSONException {
@@ -75,8 +65,16 @@ public class LoginState {
         return loginState;
     }
 
-    private static LoginState asCustomer(JSONObject data){
-        return null;
+    private static LoginState asCustomer(JSONObject data) throws JSONException {
+        LoginState loginState = new LoginState();
+        Customer customer = new Customer();
+        customer.setUserId(data.getLong("customerId"));
+        customer.setUserName(data.getString("username"));
+        customer.setEmail(data.getString("email"));
+        customer.setPhoneNumber(data.getString("phoneNum"));
+        loginState.setCustomer(customer);
+
+        return loginState;
     }
 
 }

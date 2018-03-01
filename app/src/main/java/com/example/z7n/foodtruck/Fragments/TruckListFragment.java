@@ -34,6 +34,14 @@ public class TruckListFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        // ========== MainActivity needs part ====================
+        if(getActivity() != null) {
+            MainActivity mc = (MainActivity) getActivity();
+            mc.setToolbarTitle(R.string.toolbar_truckListTitle);
+            mc.hideMenuItems();
+        }
+        // ========== MainActivity needs part ====================
+
         View parent = inflater.inflate(R.layout.truck_list_fragment,container,false);
 
         setupRecyclerView(parent); // setup List

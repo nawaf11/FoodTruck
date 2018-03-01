@@ -53,5 +53,26 @@
     <string name="rate">قيم</string>
     <string name="rating">تقييم</string>
     <string name="add_to_favorate">add_tofavorate</string>
+    <string name="save">حفظ</string>
+    <string name="editProfile">تعديل الملف الشخصي</string>
+    <string name="data_updated_success">تم تحديث البيانات بنجاح</string>
+    <string name="unknownError">حدث خطأ غير معروف حاول مرة أخرى</string>
+    <string name="menu">قائمة الطعام</string>
+    <string name="updateTruckStatus">تحديث حالة العربة</string>
+    <string name="truckStatus_update_success">تم تحديث حالة العربة بنجاح</string>
+    <string name="must_select_yourLocation_toUpdateStatus">يجب تحديد موقعك الحالي لتحديث الحالة</string>
+    <string name="optional">(اختياري)</string>
+    <string name="the_truck">العربة</string>
+    <string name="edit_truckMenu">تعديل قائمة الطعام</string>
+    <string name="add_product">إضافة منتج</string>
+    <string name="product_name">اسم المنتج</string>
+    <string name="product_price">سعر المنتج</string>
+    <string name="add">إضافة</string>
+    <string name="cancel">إلغاء</string>
+    <string name="productDescription_optional">وصف المنتج</string>
+    <string name="update">تحديث</string>
+    <string name="productAdded">تمت إضافة المنتج</string>
+    <string name="productUpdate">تم تحديث المنتج</string>
+    <string name="productDeleted">تم حدف المنتج</string>
 
 </resources>

@@ -1,16 +1,26 @@
 package com.example.z7n.foodtruck.Activity;
 
 
-import android.graphics.Color;
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,16 +32,28 @@ import android.widget.TextView;
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
+import com.example.z7n.foodtruck.Customer;
 import com.example.z7n.foodtruck.Fragments.LoginFragment;
 import com.example.z7n.foodtruck.Fragments.MapFragment;
+import com.example.z7n.foodtruck.Fragments.MapFragment2;
+import com.example.z7n.foodtruck.Fragments.MenuEditorFragment;
 import com.example.z7n.foodtruck.Fragments.RegisterFragment;
 import com.example.z7n.foodtruck.Fragments.TruckListFragment;
 import com.example.z7n.foodtruck.Fragments.TruckProfileFragment;
+import com.example.z7n.foodtruck.ILocationClient;
 import com.example.z7n.foodtruck.LoginState;
 import com.example.z7n.foodtruck.PHPHelper;
 import com.example.z7n.foodtruck.R;
 import com.example.z7n.foodtruck.SHP;
 import com.example.z7n.foodtruck.Truck;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.theartofdev.edmodo.cropper.CropImage;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -42,7 +64,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private NavigationView mNavigationView;
     private int navigationSelectedItem;
     private DrawerLayout mDrawerLayout;
-    private LoginState loginState; // Detail of current login: isVisitor? , isTruck?, get Truck/User Object
+    private LoginState loginState; // Detail of current login: isVisitor? , isTruck?, get Truck/Customer Object
+    private Menu menu;
+    private Location userLocation; // The current location of user (Truck/Customer/Visitor)
 
 /** TODO:
   ================== Fragments: ====================
@@ -56,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
    - LoginFragment ( 2 option as truck/customer)
      ------- Fragment for Truck -------
       - MyOrderFragment
-      - MenuFragment
+      - MenuEditorFragment
 
      ------- Fragment for Customer -------
 
@@ -69,146 +93,157 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         AndroidNetworking.initialize(getApplicationContext());
 
         loginState = getRememberLoginState();
-
-        setupNavigationView();
-
-        setFragment(new TruckListFragment());
-
+        //setupNavigationView();
+        setupToolbar_NavigationView();
     }
 
-    private void setupNavigationView() {
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(checkLocationPermission())
+            new LocationGetter(this); // To keep update user location.
+    }
+
+    private void setupToolbar_NavigationView(){
+        Toolbar myToolbar = findViewById(R.id.my_toolbar);
+        setSupportActionBar(myToolbar);
+
         if(getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setHomeButtonEnabled(true);
         }
+
         mNavigationView = findViewById(R.id.navigationView);
+        mNavigationView.setItemIconTintList(null);
+        mDrawerLayout = findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle
+                (this,mDrawerLayout,myToolbar,R.string.nav_open,R.string.nav_close);
+        mDrawerLayout.addDrawerListener(drawerToggle);
+        drawerToggle.syncState();
+        mNavigationView.setNavigationItemSelectedListener(this);
 
         mNavigationView.setCheckedItem(R.id.navigationBarItem_truckList);
         navigationSelectedItem = R.id.navigationBarItem_truckList;
-        mNavigationView.setNavigationItemSelectedListener(this);
-        mNavigationView.setItemIconTintList(null);
-        mDrawerLayout = findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(this
-                ,mDrawerLayout,R.string.nav_open,R.string.nav_close);
-        mDrawerLayout.addDrawerListener(drawerToggle);
-        drawerToggle.syncState();
 
         // =========== Setup Navigation Header ==============
         View navHeader =  mNavigationView.getHeaderView(0);
         loginChangeVisitorHeader(); // Default header.
-       navHeader.findViewById(R.id.navigation_header_signIn)
+        navHeader.findViewById(R.id.navigation_header_signIn)
                 .setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         setFragment(new LoginFragment());
-                      mDrawerLayout.closeDrawer(GravityCompat.START);
+                        mDrawerLayout.closeDrawer(GravityCompat.START);
                     }
                 });
 
-       navHeader.findViewById(R.id.navigationHeader_signOut)
-               .setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View v) {
-               loginState = new LoginState();
-               SHP.Login.clear(getBaseContext());
-               loginChangeVisitorHeader();
-               setFragment(new TruckListFragment());
-               mDrawerLayout.closeDrawer(GravityCompat.START);
-           }
-       });
+        navHeader.findViewById(R.id.navigationHeader_signOut)
+                .setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        loginState = new LoginState();
+                        SHP.Login.clear(getBaseContext());
+                        loginChangeVisitorHeader();
+                        setFragment(new TruckListFragment());
+                        mDrawerLayout.closeDrawer(GravityCompat.START);
+                    }
+                });
+        navHeader.findViewById(R.id.navigationHeader_signOutCustomer)
+                .setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        loginState = new LoginState();
+                        SHP.Login.clear(getBaseContext());
+                        loginChangeVisitorHeader();
+                        setFragment(new TruckListFragment());
+                        mDrawerLayout.closeDrawer(GravityCompat.START);
+                    }
+                });
 
-       navHeader.findViewById(R.id.navigation_header_createAccount)
-               .setOnClickListener(new View.OnClickListener() {
-                   @Override
-                   public void onClick(View v) {
-                       setFragment( new RegisterFragment());
-                       mDrawerLayout.closeDrawer(GravityCompat.START);
-                   }
-               });
+        navHeader.findViewById(R.id.navigation_header_createAccount)
+                .setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        setFragment( new RegisterFragment());
+                        mDrawerLayout.closeDrawer(GravityCompat.START);
+                    }
+                });
 
-       final Switch statusSwitch = navHeader.findViewById(R.id.navigationHeader_truckStatusSwitch);
+        final Switch statusSwitch = navHeader.findViewById(R.id.navigationHeader_truckStatusSwitch);
         statusSwitch.setChecked(false);
         statusSwitch.setText(Truck.getStatusText(getBaseContext(),false));
         statusSwitch.setTextColor(getResources().getColor((R.color.truckStatus_red)));
 
-       statusSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-           @Override
-           public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-               if(isChecked) {
-                   statusSwitch.setText(Truck.getStatusText(getBaseContext(),true));
-                   statusSwitch.setTextColor(getResources().getColor((R.color.truckStatus_green)));
-               }
-               else {
-                   statusSwitch.setText(Truck.getStatusText(getBaseContext(),false));
-                   statusSwitch.setTextColor(getResources().getColor((R.color.truckStatus_red)));
-               }
-           }
-       });
+        statusSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(loginState.getTruck() == null)
+                    return;
 
+                if(isChecked) {
+                    statusSwitch.setText(Truck.getStatusText(getBaseContext(),true));
+                    statusSwitch.setTextColor(getResources().getColor((R.color.truckStatus_green)));
+                    loginState.getTruck().updateTruckStatusTask(MainActivity.this,true);
+                }
+                else {
+                    statusSwitch.setText(Truck.getStatusText(getBaseContext(),false));
+                    statusSwitch.setTextColor(getResources().getColor((R.color.truckStatus_red)));
+                    loginState.getTruck().updateTruckStatusTask(MainActivity.this,false);
+                }
+            }
+        });
     }
 
-    private void setupBottomToolbar() {
-        findViewById(R.id.barItem_container_account)
-                .setOnClickListener(new View.OnClickListener() {
+    private boolean checkLocationPermission() {
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
+            return true;
 
-                    @Override
-                    public void onClick(View view) {
-                        Log.d("traceer","baItem.OnClick start");
-                        unselectBarItems();
-                        view.setBackgroundColor(getResources().getColor(R.color.colorPrimaryLight));
-
-                    }
-                });
-
-        findViewById(R.id.barItem_container_map)
-                .setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Log.d("traceer","baItem.OnClick start");
-                        unselectBarItems();
-                        view.setBackgroundColor(getResources().getColor(R.color.colorPrimaryLight));
-                        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                                new MapFragment()).commit();
-
-                    }
-                });
-
-        findViewById(R.id.barItem_container_list)
-                .setOnClickListener(new View.OnClickListener() {
-
-                    @Override
-                    public void onClick(View view) {
-                        Log.d("traceer","baItem.OnClick start");
-                        unselectBarItems();
-                        view.setBackgroundColor(getResources().getColor(R.color.colorPrimaryLight));
-                        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                                new TruckListFragment()).commit();
-                    }
-                });
-
-    }
-
-    private void unselectBarItems(){
-        findViewById(R.id.barItem_container_account).setBackgroundColor(Color.TRANSPARENT);
-        findViewById(R.id.barItem_container_map).setBackgroundColor(Color.TRANSPARENT);
-        findViewById(R.id.barItem_container_list).setBackgroundColor(Color.TRANSPARENT);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+            return false;
+        }
+        return true;
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        return super.onCreateOptionsMenu(menu);
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.toolbar_menu,menu);
+        this.menu = menu;
+        hideMenuItems();
+        setFragment(new TruckListFragment());
+        return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-       if(item.getItemId() == 16908332){ // 16908332 is id of nav_item
-            mDrawerLayout = findViewById(R.id.drawer_layout);
-           if(mDrawerLayout.isDrawerOpen(GravityCompat.START))
-               mDrawerLayout.closeDrawer(GravityCompat.START);
-           else
-               mDrawerLayout.openDrawer(GravityCompat.START);
-       }
+//       if(item.getItemId() == 16908332){ // 16908332 is id of nav_item
+//            mDrawerLayout = findViewById(R.id.drawer_layout);
+//           if(mDrawerLayout.isDrawerOpen(GravityCompat.START))
+//               mDrawerLayout.closeDrawer(GravityCompat.START);
+//           else
+//               mDrawerLayout.openDrawer(GravityCompat.START);
+//       }
+
+        Fragment currentFragment = getSupportFragmentManager().getPrimaryNavigationFragment();
+        switch (item.getItemId()){
+            case R.id.menuItem_editProfile:
+                if( currentFragment instanceof TruckProfileFragment) {
+                    ((TruckProfileFragment)currentFragment).editClicked();
+                    break;
+                }
+
+            case R.id.menuItem_saveProfileUpdate:
+                if( currentFragment instanceof TruckProfileFragment) {
+                    ((TruckProfileFragment) currentFragment).saveClicked();
+                    break;
+                }
+        }
 
         return true;
     }
@@ -216,6 +251,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         mDrawerLayout.closeDrawer(GravityCompat.START);
+
+        for(int i=0; i < getSupportFragmentManager().getBackStackEntryCount(); i++ ) {
+            getSupportFragmentManager().popBackStack();
+        }
 
        if(item.getItemId() == navigationSelectedItem)
            return true;
@@ -225,7 +264,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         switch (item.getItemId()){
             case R.id.navigationBarItem_map:
-                setFragment(new MapFragment());
+                setFragment(new MapFragment2());
                 return true;
 
             case R.id.navigationBarItem_truckList:
@@ -250,7 +289,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if(loginState.isTruck())
             loginChangeTruckHeader(mLoginState.getTruck());
         else
-            loginChangeCustomerHeader();
+            loginChangeCustomerHeader(mLoginState.getCustomer());
     }
 
     public void setFragment(Fragment fragment, boolean isBackTrace){
@@ -301,8 +340,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
-    private void loginChangeCustomerHeader(){
+    private void loginChangeCustomerHeader(Customer customer){
+        mNavigationView.getHeaderView(0).findViewById(R.id.truckHeader_container).setVisibility(View.GONE);
+        mNavigationView.getHeaderView(0).findViewById(R.id.visitorHeader_container).setVisibility(View.GONE);
+        mNavigationView.getHeaderView(0).findViewById(R.id.customerHeader_container).setVisibility(View.VISIBLE);
 
+        if (customer == null)
+            return;
+
+        TextView customerUsername = mNavigationView.getHeaderView(0).findViewById(R.id.navigation_header_customerUsername);
+
+        customerUsername.setText(customer.getUserName());
     }
 
     private void loginChangeVisitorHeader(){ // when user click Sign-Out become visitor.
@@ -330,8 +378,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             if(!isLoginSuccess){ // Error: username/password not match.
                                 return;
                             }
-                            LoginState.CreateLogin      // setLogin state to MainActivity Truck/Customer
-                                    (MainActivity.this, response, SHP.Login.isTruck(getBaseContext()));
+                            setLoginState(LoginState.CreateLogin
+                                    (response, SHP.Login.isTruck(getBaseContext())));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -342,6 +390,92 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         Log.d("server-response",anError.getErrorDetail());
                     }
                 });
-        return null;
+
+        return new LoginState();
+    }
+
+    public void setToolbarTitle(int titleId) {
+        if(getSupportActionBar() != null)
+            getSupportActionBar().setTitle(titleId);
+    }
+
+    public void hideMenuItems(){
+        if(menu == null)
+            return;
+
+        for(int i=0; i < menu.size();i++)
+            menu.getItem(i).setVisible(false);
+    }
+
+    public Menu getMenu(){return menu;}
+
+    public NavigationView getNavigationView(){return mNavigationView;}
+
+    public Location getUserLocation(){
+        return userLocation;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK) {
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+                Uri resultUri = result.getUri();
+                Log.d("uri-result", resultUri.getPath());
+                Fragment currentFragment = getSupportFragmentManager().getPrimaryNavigationFragment();
+                if(currentFragment instanceof MenuEditorFragment){
+                    ((MenuEditorFragment)currentFragment).productImageResult(resultUri);
+            }
+        }
+    }
+
+    private class LocationGetter extends LocationCallback implements GoogleApiClient.ConnectionCallbacks,
+            GoogleApiClient.OnConnectionFailedListener {
+//        private GoogleApiClient mGoogleApiClient;
+        private FusedLocationProviderClient fusedLocationClient;
+        private LocationRequest locationRequest;
+
+        @SuppressLint("MissingPermission")
+        private LocationGetter(Context context){
+//            mGoogleApiClient = new GoogleApiClient.Builder(context)
+//                    .addConnectionCallbacks(this)
+//                    .addOnConnectionFailedListener(this)
+//                    .addApi(LocationServices.API).build();
+
+            fusedLocationClient = LocationServices.getFusedLocationProviderClient(context);
+            locationRequest = new LocationRequest();
+            locationRequest.setInterval(1000);
+            locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+            fusedLocationClient.requestLocationUpdates(locationRequest,this,null);
+        }
+
+        @Override
+        public void onConnected(@Nullable Bundle bundle) {
+            Log.d("fusedgps","onConnected()");
+        }
+
+        @Override
+        public void onConnectionSuspended(int i) {
+            Log.d("fusedgps","onConnectionSuspended");
+        }
+
+        @Override
+        public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+            Log.d("fusedgps","onConnectionFailed");
+        }
+
+        @Override
+        public void onLocationResult(LocationResult locationResult) {
+            Log.d("fusedgps","onLocationResult: "+ locationResult.getLastLocation().getLatitude()
+                    +" , "+locationResult.getLastLocation().getLongitude());
+            Log.d("fusedgps","onLocationResult: "+ locationResult.getLastLocation().getTime());
+
+            super.onLocationResult(locationResult);
+            userLocation = locationResult.getLastLocation();
+
+            Fragment currentFragment = getSupportFragmentManager().getPrimaryNavigationFragment();
+            if( currentFragment instanceof ILocationClient) // If current fragment want to receive location updates.
+                ((ILocationClient)currentFragment).onLocationUpdated(locationResult);
+        }
     }
 }
