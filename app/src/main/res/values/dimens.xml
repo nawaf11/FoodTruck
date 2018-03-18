@@ -11,4 +11,8 @@
     <dimen name="floatingButton_size">65dp</dimen>
     <dimen name="productItem_addIcon_imageSize">30dp</dimen>
     <dimen name="topMargin_bwProductItems">16dp</dimen>
+    <dimen name="rateNumber_textSize">26sp</dimen>
+    <dimen name="phoneEmail_IconSize">40dp</dimen>
+    <dimen name="favoriteStar_iconSize">25dp</dimen>
+    <dimen name="timeExplain_timepickerDialog">16sp</dimen>
 </resources>

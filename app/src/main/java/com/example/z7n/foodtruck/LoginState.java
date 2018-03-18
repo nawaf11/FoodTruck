@@ -1,6 +1,7 @@
 package com.example.z7n.foodtruck;
 
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,8 +28,7 @@ public class LoginState {
 
     public @Nullable Truck getTruck(){return truck;}
 
-    public @Nullable
-    Customer getCustomer(){return customer;}
+    public @Nullable Customer getCustomer(){return customer;}
 
     public void setTruck(Truck truck){
         this.truck = truck;
@@ -51,12 +51,15 @@ public class LoginState {
         LoginState loginState = new LoginState();
         Truck truck = new Truck();
         long tid = Long.parseLong(data.getString("TruckID"));
+        Log.d("dsfdsfsffdsfdsfs",tid+"");
         truck.setTruckId(tid);
         truck.setTruckName(data.getString("name"));
         truck.setUserName(data.getString("username"));
         truck.setDescription(data.getString("description"));
         truck.setEmail(data.getString("email"));
         truck.setPhoneNumber(data.getString("phoneNum"));
+        truck.setStatus(data.getString("status").equals("true"));
+        truck.setAcceptOrder(data.getString("canprepare").equals("true"));
 
         loginState.setTruck(truck);
         return loginState;

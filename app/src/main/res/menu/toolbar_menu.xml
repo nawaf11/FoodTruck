@@ -14,5 +14,10 @@
         app:showAsAction="ifRoom"
         />
 
+    <item android:id="@+id/menuItem_backButton"
+        android:title="@string/back"
+        android:icon="@drawable/back_button"
+        app:showAsAction="always"
+        />
 
 </menu>

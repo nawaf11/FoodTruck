@@ -1,5 +1,6 @@
 package com.example.z7n.foodtruck.Fragments;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -27,6 +28,8 @@ import com.example.z7n.foodtruck.PHPHelper;
 import com.example.z7n.foodtruck.R;
 import com.example.z7n.foodtruck.SHP;
 import com.example.z7n.foodtruck.Truck;
+import com.squareup.picasso.Picasso;
+import com.theartofdev.edmodo.cropper.CropImage;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -51,6 +54,9 @@ public class RegisterFragment extends Fragment {
     private EditText editText_truckName;
     private EditText editText_truckDescription;
     private Button buttonRegister;
+    private ImageView truckImage;
+
+    private Uri truckImage_Uri;
 
     @Nullable
     @Override
@@ -83,9 +89,17 @@ public class RegisterFragment extends Fragment {
         editText_phoneNumber = parentView.findViewById(R.id.editText_phoneNumber);
         editText_truckName = parentView.findViewById(R.id.editText_truckName);
         editText_truckDescription = parentView.findViewById(R.id.editText_truckDescription);
+        truckImage = parentView.findViewById(R.id.register_truckImage);
         String optinalText = getResources().getString(R.string.optional);
         editText_truckDescription.setHint(editText_truckDescription.getHint() + " " + optinalText);
 
+        truckImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(getActivity() != null)
+                    CropImage.activity().start(getActivity());
+            }
+        });
 
         radioButton_asTruck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -116,6 +130,7 @@ public class RegisterFragment extends Fragment {
                     submitCustomer();
             }
         });
+
 
     }
 
@@ -223,7 +238,43 @@ public class RegisterFragment extends Fragment {
         activity.setLoginState(loginState);
         rememberUser();
         activity.setFragment(new TruckListFragment());
+
+        if(radioButton_asTruck.isChecked()) {
+            uploadTruckImage(jsonResponse);
+        }
     }
+
+    private void uploadTruckImage(JSONObject response) throws JSONException {
+        String truckID = response.getJSONObject("data").getString("TruckID");
+
+        AndroidNetworking.upload(PHPHelper.Truck.upload_truckImage+"?truckId="+truckID)
+                .addMultipartFile("file",new File(truckImage_Uri.getPath()))
+                .build().getAsJSONObject(new JSONObjectRequestListener() {
+            @Override
+            public void onResponse(JSONObject response) {
+                Log.d("registerUploadImage","onResponse: "+response.toString());
+                try {
+                    if(response.getString("state").equals("success")) {
+                        Toast.makeText(getActivity(), R.string.truckImageUpdated, Toast.LENGTH_SHORT).show();
+                    }
+                    else
+                        Toast.makeText(getActivity(), R.string.unknownError, Toast.LENGTH_SHORT).show();
+
+
+                } catch (JSONException e) {
+                    Toast.makeText(getActivity(),R.string.unknownError,Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onError(ANError anError) {
+                Log.d("registerUploadImage","onError: "+anError.getErrorDetail());
+                Toast.makeText(getActivity(),R.string.serverNotResponse,Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
 
     private void rememberUser(){
         SHP.Login.setUsernameOrEmail(getContext(),
@@ -270,7 +321,10 @@ public class RegisterFragment extends Fragment {
             return false; // No  error for customer.
 
         // =========== For truck ==================
-
+        if(truckImage_Uri == null) { // user doesn't select truckImage (logo)
+            Toast.makeText(getContext(), getResources().getString(R.string.register_truckLogo_isEmpty), Toast.LENGTH_LONG).show();
+            return true;
+        }
 
         return false;
     }
@@ -299,6 +353,12 @@ public class RegisterFragment extends Fragment {
 
             parentView.findViewById(R.id.editText_truckName).setVisibility(action);
             parentView.findViewById(R.id.editText_truckDescription).setVisibility(action);
+            parentView.findViewById(R.id.register_truckImage).setVisibility(action);
 
+    }
+
+    public void truckImageReceiver(Uri resultUri) {
+        this.truckImage_Uri = resultUri;
+        Picasso.with(getContext()).load(resultUri).into(truckImage);
     }
 }

@@ -14,13 +14,12 @@
     android:layout_height="wrap_content"
     >
 
-    <de.hdodenhof.circleimageview.CircleImageView
+    <ImageView
         android:id="@+id/navigationHeader_truckImage"
         android:layout_width="@dimen/navigationHeader_truckImage_size"
         android:layout_height="@dimen/navigationHeader_truckImage_size"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        android:src="@drawable/foodtruck"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginLeft="16dp" />

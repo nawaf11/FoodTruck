@@ -1,243 +1,238 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:layout_editor_absoluteY="81dp">
+    >
 
-    <ImageView
-        android:id="@+id/truckImage"
-        android:layout_width="85dp"
-        android:layout_height="75dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        android:contentDescription="@string/app_name"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/foodtruck" />
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/truckName"
-        style="@style/Base.TextAppearance.AppCompat.Widget.PopupMenu.Header"
-        android:layout_width="0dp"
-        android:layout_height="30dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        android:gravity="center"
-        android:text="@string/truckName"
-        android:textColor="@color/colorPrimaryDark"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/truckImage" />
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="112dp"
-        android:layout_height="40dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
 
-        android:layout_marginTop="8dp"
-        android:gravity="center_vertical"
-        android:text="@string/truck_status"
-        android:textAppearance="@style/myText1"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/truckName" />
-
-    <TextView
-        android:id="@+id/truckdiscrption"
-        android:layout_width="367dp"
-        android:layout_height="71dp"
-        android:layout_marginTop="104dp"
-        android:gravity="center"
-        android:text="@string/truck_description"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/truckImage" />
-
-    <Button
-        android:id="@+id/orderBtn"
-        android:layout_width="180dp"
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/truckPage_layout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginTop="8dp"
-        android:backgroundTint="@color/colorPrimary"
-        android:text="@string/order"
-        android:textAppearance="@style/myText1"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/bookBtn"
-        app:layout_constraintTop_toBottomOf="@+id/truckdiscrption" />
+        >
 
-    <Button
-        android:id="@+id/bookBtn"
-        android:layout_width="180dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:backgroundTint="@color/colorPrimary"
-        android:text="@string/reserve"
-        android:textAppearance="@style/myText1"
-        app:layout_constraintEnd_toStartOf="@+id/orderBtn"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/truckdiscrption" />
+        <ImageView
+            android:id="@+id/truckImage"
+            android:layout_width="@dimen/truck_profile_imageSize"
+            android:layout_height="@dimen/truck_profile_imageSize"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:contentDescription="@string/app_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
 
-    <TextView
-        android:id="@+id/textView10"
-        android:layout_width="212dp"
-        android:layout_height="25dp"
-        android:layout_marginEnd="84dp"
-        android:layout_marginRight="84dp"
-        android:layout_marginTop="13dp"
-        android:gravity="center_horizontal"
-        android:text="@string/comunication"
-        android:textAppearance="@style/myText1"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/bookBtn" />
+        <TextView
+            android:id="@+id/truckName"
+            style="@style/Base.TextAppearance.AppCompat.Widget.PopupMenu.Header"
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:text="@string/truckName"
+            android:textColor="@color/colorPrimaryDark"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/truckImage" />
 
-    <TextView
-        android:id="@+id/truckstate"
-        android:layout_width="70dp"
-        android:layout_height="19dp"
-        android:layout_marginTop="8dp"
-        android:gravity="center_horizontal"
-        android:text="@string/truckStatus_closed"
-        app:layout_constraintStart_toStartOf="@+id/textView"
-        app:layout_constraintTop_toTopOf="@+id/textView" />
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/colorTextBlack"
+            android:text="@string/truck_status"
+            app:layout_constraintStart_toStartOf="@+id/rateNum"
+            app:layout_constraintTop_toBottomOf="@+id/rateNum"
+            android:layout_marginLeft="8dp" />
 
-    <ImageView
-        android:id="@+id/imageView2"
-        android:layout_width="66dp"
-        android:layout_height="57dp"
-        android:layout_marginEnd="50dp"
-        android:layout_marginTop="8dp"
-        android:contentDescription="@string/login_Email"
-        app:layout_constraintEnd_toStartOf="@+id/imageView3"
-        app:layout_constraintTop_toBottomOf="@+id/textView10"
-        android:layout_marginRight="50dp" />
+        <TextView
+            android:id="@+id/truck_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginLeft="8dp"
+            android:gravity="center"
+            android:text="@string/truck_description"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/truckName" />
 
-    <ImageView
-        android:id="@+id/imageView3"
-        android:layout_width="66dp"
-        android:layout_height="57dp"
-        android:layout_marginEnd="100dp"
-        android:layout_marginTop="8dp"
-        android:contentDescription="@string/app_name"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView10"
-        android:layout_marginRight="100dp" />
+        <Button
+            android:id="@+id/orderBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/primary_button_background"
+            android:text="@string/order"
+            android:textColor="@color/colorPrimaryDark"
+            app:layout_constraintEnd_toStartOf="@+id/bookBtn"
+            app:layout_constraintTop_toTopOf="@+id/ratestar"
+            android:layout_marginRight="16dp" />
 
-    <TextView
-        android:id="@+id/email"
-        android:layout_width="107dp"
-        android:layout_height="22dp"
-        android:layout_marginEnd="28dp"
-        android:layout_marginRight="28dp"
-        android:text="@string/login_Email"
-        app:layout_constraintEnd_toStartOf="@+id/number"
-        app:layout_constraintTop_toBottomOf="@+id/imageView2"
-        tools:text="email" />
+        <Button
+            android:id="@+id/bookBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/primary_button_background"
+            android:text="@string/reserve"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/orderBtn"
+            android:layout_marginRight="16dp" />
 
-    <TextView
-        android:id="@+id/number"
-        android:layout_width="104dp"
-        android:layout_height="19dp"
-        android:layout_marginEnd="70dp"
-        android:text="@string/phonenumberRegister"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView3"
-        android:layout_marginRight="70dp" />
+        <TextView
+            android:id="@+id/textView10"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="104dp"
+            android:gravity="center_horizontal"
+            android:text="@string/comunication"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/bookBtn" />
 
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="129dp"
-        android:layout_height="30dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="104dp"
-        android:text="@string/rating"
-        android:textAppearance="@style/myText1"
-        app:layout_constraintEnd_toEndOf="@+id/imageView3"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/imageView2"
-        app:layout_constraintTop_toBottomOf="@+id/textView10" />
+        <TextView
+            android:id="@+id/truckstate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:gravity="center_horizontal"
+            android:text="@string/truckStatus_closed"
+            android:textColor="@color/truckStatus_red"
+            app:layout_constraintStart_toEndOf="@+id/textView"
+            app:layout_constraintTop_toTopOf="@+id/textView"
+            android:layout_marginLeft="8dp" />
 
-    <RatingBar
-        android:id="@+id/ratingBarUser"
+        <ImageView
+            android:id="@+id/email_imageView"
+            android:layout_width="@dimen/phoneEmail_IconSize"
+            android:layout_height="@dimen/phoneEmail_IconSize"
+            android:layout_marginEnd="0dp"
+            android:layout_marginTop="8dp"
+            android:contentDescription="@string/login_Email"
+            app:layout_constraintEnd_toEndOf="@+id/phone_imageView"
+            app:layout_constraintTop_toBottomOf="@+id/phone_imageView"
+            android:layout_marginRight="8dp" />
+
+        <ImageView
+            android:id="@+id/phone_imageView"
+            android:layout_width="@dimen/phoneEmail_IconSize"
+            android:layout_height="@dimen/phoneEmail_IconSize"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="16dp"
+            android:contentDescription="@string/app_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/rateBtn"
+            android:layout_marginRight="24dp" />
+
+        <TextView
+            android:id="@+id/email"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="8dp"
+            android:text="@string/login_Email"
+            app:layout_constraintEnd_toStartOf="@+id/email_imageView"
+            app:layout_constraintTop_toTopOf="@+id/email_imageView"
+            tools:text="email"
+            android:layout_marginRight="16dp" />
+
+        <TextView
+            android:id="@+id/phone_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="8dp"
+            android:text="0591818800"
+            app:layout_constraintEnd_toStartOf="@+id/phone_imageView"
+            app:layout_constraintTop_toTopOf="@+id/phone_imageView"
+            android:layout_marginRight="16dp" />
+
+        <RatingBar
+            android:id="@+id/ratingBarUser"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/orderBtn" />
+
+        <Button
+            android:id="@+id/rateBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/primary_button_background"
+            android:text="@string/rate"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ratingBarUser" />
+
+        <ImageView
+            android:id="@+id/favImage"
+            android:layout_width="@dimen/phoneEmail_IconSize"
+            android:layout_height="@dimen/phoneEmail_IconSize"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:contentDescription="@string/add_to_favorate"
+            app:layout_constraintEnd_toStartOf="@+id/rateBtn"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ratingBarUser" />
+
+        <ImageView
+            android:id="@+id/ratestar"
+            android:layout_width="@dimen/favoriteStar_iconSize"
+            android:layout_height="@dimen/favoriteStar_iconSize"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintStart_toEndOf="@+id/rateNum"
+            app:layout_constraintTop_toTopOf="@+id/rateNum"
+            android:layout_marginLeft="8dp" />
+
+        <TextView
+            android:id="@+id/rateNum"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:text="4.6"
+            android:textAlignment="center"
+            android:textSize="@dimen/rateNumber_textSize"
+            android:textColor="@color/colorTextBlack"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/truck_description"
+            android:layout_marginLeft="16dp" />
+
+    </android.support.constraint.ConstraintLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView3" />
+        android:layout_centerInParent="true"
+        android:visibility="invisible"
+        />
 
-    <Button
-        android:id="@+id/rateBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:backgroundTint="@color/colorPrimary"
-        android:text="@string/rate"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ratingBarUser" />
+    </RelativeLayout>
 
-    <ImageButton
-        android:id="@+id/favImage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="16dp"
-        android:contentDescription="@string/add_to_favorate"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginStart="16dp" />
-
-    <ImageView
-        android:id="@+id/ratestar"
-        android:layout_width="72dp"
-        android:layout_height="42dp"
-        android:layout_marginStart="47dp"
-        android:layout_marginLeft="47dp"
-        android:layout_marginTop="8dp"
-        android:contentDescription="rateStar"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/truckName"
-        app:srcCompat="@drawable/star" />
-
-    <TextView
-        android:id="@+id/rateNum"
-        android:layout_width="72dp"
-        android:layout_height="42dp"
-        android:layout_marginStart="18dp"
-        android:layout_marginLeft="18dp"
-
-        android:layout_marginTop="8dp"
-        android:gravity="center_vertical"
-        android:text="التقييم"
-        android:textAlignment="center"
-        android:textStyle="bold"
-        app:layout_constraintStart_toEndOf="@+id/ratestar"
-        app:layout_constraintTop_toBottomOf="@+id/truckName" />
-
-    <ImageButton
-        android:id="@+id/imageButton"
-        android:layout_width="78dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="16dp"
-        android:contentDescription="added to fav"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/fav" />
-
-</android.support.constraint.ConstraintLayout>
+</ScrollView>

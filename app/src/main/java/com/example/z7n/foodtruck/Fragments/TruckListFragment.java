@@ -8,18 +8,30 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.androidnetworking.AndroidNetworking;
+import com.androidnetworking.error.ANError;
+import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.example.z7n.foodtruck.Activity.MainActivity;
+import com.example.z7n.foodtruck.PHPHelper;
 import com.example.z7n.foodtruck.R;
 import com.example.z7n.foodtruck.Truck;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.Picasso;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -30,6 +42,9 @@ import java.util.ArrayList;
 
 public class TruckListFragment extends Fragment {
     private TruckAdapter truckAdapter;
+    private ProgressBar progressBar;
+    private int page;
+    private final int PAGE_LIMIT=20;
 
     @Nullable
     @Override
@@ -42,9 +57,15 @@ public class TruckListFragment extends Fragment {
         }
         // ========== MainActivity needs part ====================
 
+        page = 1;
         View parent = inflater.inflate(R.layout.truck_list_fragment,container,false);
+        progressBar = parent.findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.INVISIBLE);
 
         setupRecyclerView(parent); // setup List
+
+        progressBar.setVisibility(View.VISIBLE);
+        startTruckListTask();
 
 
         return parent;
@@ -55,7 +76,7 @@ public class TruckListFragment extends Fragment {
         RecyclerView recyclerView = parent.findViewById(R.id.listView_truckList);
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(getContext().getApplicationContext());
         recyclerView.setLayoutManager(mLayoutManager);
-        truckAdapter = (new TruckAdapter(getFakeList()));
+        truckAdapter = (new TruckAdapter(new ArrayList<Truck>()));
         recyclerView.setAdapter(truckAdapter);
 
         EndlessRecyclerViewScrollListener scrollListener =
@@ -63,9 +84,7 @@ public class TruckListFragment extends Fragment {
 
                     @Override
                     public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                        Toast.makeText(getContext(),"Loading the more trucks ..",Toast.LENGTH_SHORT).show();
-                        truckAdapter.truckList.addAll(getFakeList());
-                        truckAdapter.notifyDataSetChanged();
+                        startTruckListTask();
                     }
                 };
         recyclerView.addOnScrollListener(scrollListener);
@@ -86,6 +105,62 @@ public class TruckListFragment extends Fragment {
         return arr;
     }
 
+    private void startTruckListTask(){
+
+        AndroidNetworking.get(PHPHelper.Truck.get_truck_pageList)
+                .addQueryParameter("page",String.valueOf(page))
+                .addQueryParameter("limit",String.valueOf(PAGE_LIMIT))
+                .build().getAsJSONObject(new JSONObjectRequestListener() {
+            @Override
+            public void onResponse(JSONObject response) {
+                Log.d("truckList-response",response.toString());
+                try {
+                    if(response.getString("state").equals("success")){
+                        updateListFromJson(response);
+                        page++;
+                    }
+                    else if(page == 1)
+                        Toast.makeText(getContext(),R.string.unknownError,Toast.LENGTH_SHORT).show();
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    if(page == 1)
+                        Toast.makeText(getContext(),R.string.unknownError,Toast.LENGTH_SHORT).show();
+                    progressBar.setVisibility(View.INVISIBLE);
+                }
+            }
+
+            @Override
+            public void onError(ANError anError) {
+                progressBar.setVisibility(View.INVISIBLE);
+                if(page == 1)
+                    Toast.makeText(getContext(),R.string.serverNotResponse,Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void updateListFromJson(JSONObject response) throws JSONException{
+        ArrayList<Truck> truckList = new ArrayList<>();
+
+        JSONArray jsonArray = response.getJSONArray("data");
+
+        for(int i=0; i < jsonArray.length(); i++){
+            JSONObject jsonObject = jsonArray.getJSONObject(i);
+            Truck truck = new Truck();
+            truck.setTruckId(jsonObject.getLong("TruckID"));
+            truck.setTruckName(jsonObject.getString("name"));
+            boolean state_flag = jsonObject.getString("status").equals("true");
+            truck.setStatus(state_flag);
+
+            truckList.add(truck);
+        }
+
+        int position_start = truckAdapter.truckList.size();
+        truckAdapter.truckList.addAll(truckList);
+        truckAdapter.notifyItemRangeInserted(position_start,truckList.size());
+        progressBar.setVisibility(View.INVISIBLE);
+    }
+
     private class TruckAdapter extends RecyclerView.Adapter<TruckAdapter.TruckHolder> {
         ArrayList<Truck> truckList;
 
@@ -103,18 +178,44 @@ public class TruckListFragment extends Fragment {
         }
 
         @Override
-        public void onBindViewHolder(TruckHolder holder, int i) {
+        public void onBindViewHolder(final TruckHolder holder, final int i) {
             holder.setTruckName(truckList.get(i).getTruckName());
             holder.setTruckDistance(20.1);
-            Picasso.with(getContext()).load(R.drawable.foodtruck).into(holder.truckImage);
+            Picasso.with(getContext()).load(PHPHelper.Truck.get_truckImage + truckList.get(i).getTruckId())
+                    .memoryPolicy(MemoryPolicy.NO_STORE, MemoryPolicy.NO_CACHE)
+                    .fit().into(holder.truckImage, new Callback() {
+                @Override
+                public void onSuccess() {
 
+                }
+
+                @Override
+                public void onError() {
+                    Picasso.with(getContext()).load(R.drawable.foodtruck).fit().into(holder.truckImage);
+                }
+            });
+
+
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    MainActivity ma = ((MainActivity)getActivity());
+                    if(ma != null) {
+                        TruckPageFragment fragment = new TruckPageFragment();
+                        Bundle bundle = new Bundle(); bundle.putLong("truck_id",truckList.get(i).getTruckId());
+                        fragment.setArguments(bundle);
+                        ma.setFragment(fragment, true);
+                    }
+                }
+            });
         }
 
         @Override
         public int getItemCount() {
             return truckList.size();
         }
-         class TruckHolder extends RecyclerView.ViewHolder {
+
+        class TruckHolder extends RecyclerView.ViewHolder {
             private TextView truckName;
             private ImageView truckImage;
             private TextView distanceText;
@@ -123,14 +224,6 @@ public class TruckListFragment extends Fragment {
                  truckName = itemView.findViewById(R.id.truckItem_truckName);
                  truckImage = itemView.findViewById(R.id.truckItem_ImageView);
                  distanceText = itemView.findViewById(R.id.truckItem_distanceTextView);
-                 itemView.setOnClickListener(new View.OnClickListener() {
-                     @Override
-                     public void onClick(View v) {
-                         MainActivity ma = ((MainActivity)getActivity());
-                         if(ma != null)
-                            ma.setFragment(new TruckPageFragment(),true);
-                     }
-                 });
              }
 
              public void setTruckName(String name){

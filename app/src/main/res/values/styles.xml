@@ -26,5 +26,9 @@
         <item name="android:background">@drawable/edit_text_border_closed</item>
     </style>
 
+    <style name="TimePickerTheme" parent="Theme.AppCompat.Light.Dialog">
+        <item name="colorAccent">@color/colorPrimary</item>
+    </style>
+
 
 </resources>

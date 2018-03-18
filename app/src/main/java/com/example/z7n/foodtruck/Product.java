@@ -51,6 +51,10 @@ public class Product {
         return image;
     }
 
+    public String getImageLink(){
+        return PHPHelper.Product.image + id;
+    }
+
     public void setImage(Drawable image) {
         this.image = image;
     }

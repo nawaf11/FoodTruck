@@ -12,7 +12,7 @@ import com.google.android.gms.maps.model.LatLng;
  */
 
 public class Truck {
-    private String id; // This random auto-incremented number from database
+    private long id; // This random auto-incremented number from database
     private String userName;
     private String truckName;
     private String email;
@@ -25,6 +25,8 @@ public class Truck {
 
 
     private Location location; // current location of the truck.
+    private String openUntil;
+    private LatLng latLng; // which is location
 
     public Truck(){
 
@@ -38,12 +40,12 @@ public class Truck {
         return context.getResources().getString(R.string.truckStatus_closed);
     }
 
-    public String getTruckId() {
+    public long getTruckId() {
         return id;
     }
 
     public void setTruckId(long truckId) {
-        this.id = String.valueOf(true);
+        this.id = truckId;
     }
 
     public String getUserName() {
@@ -94,7 +96,7 @@ public class Truck {
         this.isOpen = isOpen;
     }
 
-    public String getStatusText(View context){
+    public String getStatusText(Context context){
         if (isOpen)
             return context.getResources().getString(R.string.truckStatus_open);
 
@@ -125,5 +127,21 @@ public class Truck {
 
     public void setLocation(Location location) {
         this.location = location;
+    }
+
+    public void setOpenUntil(String openUntil) {
+        this.openUntil = openUntil;
+    }
+
+    public String getOpenUntil() {
+        return openUntil;
+    }
+
+    public void setLatLng(LatLng latLng) {
+        this.latLng = latLng;
+    }
+
+    public LatLng getLatLng() {
+        return latLng;
     }
 }

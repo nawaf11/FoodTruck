@@ -30,13 +30,12 @@
         app:layout_constraintStart_toEndOf="@+id/truckProfile_truckImage"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <de.hdodenhof.circleimageview.CircleImageView
+    <ImageView
         android:id="@+id/truckProfile_truckImage"
         android:layout_width="@dimen/truck_profile_imageSize"
         android:layout_height="80dp"
         android:layout_marginLeft="16dp"
         android:layout_marginStart="16dp"
-        android:src="@drawable/foodtruck"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/truckProfile_truckHeaderName" />

@@ -14,7 +14,7 @@ import java.util.List;
 public class Customer {
     private long id; // This random auto-incremented number from database
     private String userName;
-    private List<String> favorateTrucks;
+    private List<Long> favorateTrucks;
     private String email;
     private String phoneNumber;
 
@@ -24,12 +24,13 @@ public class Customer {
 
     }
 
-    public void addToFavorate(String id){
+    public void addToFavorate(Long id){
         favorateTrucks.add(id);
     }
-    public void removeFromFavroate(String id){
-       favorateTrucks.remove(id);
-        }
+
+    public boolean removeFromFavroate(Long id){
+       return favorateTrucks.remove(id);
+    }
 
     public long geUserId() {
         return id;

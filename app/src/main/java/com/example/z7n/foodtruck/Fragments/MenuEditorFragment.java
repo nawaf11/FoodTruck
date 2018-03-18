@@ -33,6 +33,8 @@ import com.example.z7n.foodtruck.PHPHelper;
 import com.example.z7n.foodtruck.Product;
 import com.example.z7n.foodtruck.R;
 import com.example.z7n.foodtruck.Truck;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
 
@@ -154,26 +156,10 @@ public class MenuEditorFragment extends Fragment {
 
         addProductDialog.productAdderIcon.setImageBitmap(null);
         addProductDialog.imageUri = uri;
-        int w = addProductDialog.productImage.getWidth();
-        int h = addProductDialog.productImage.getHeight();
+
         Picasso.with(getContext()).load(uri)
-                .resize(w, h).
-                into(addProductDialog.productImage);
-
-        // Temp
-                AndroidNetworking.upload("http://foodtruck.mywebcommunity.org/php/upload_productImage.php")
-                            .addMultipartFile("file",new File(uri.getPath()))
-                            .build().getAsJSONObject(new JSONObjectRequestListener() {
-                        @Override
-                        public void onResponse(JSONObject response) {
-                            Log.d("fgsgst",response.toString());
-                    }
-
-                    @Override
-                    public void onError(ANError anError) {
-
-                    }
-                });
+                .fit()
+                .into(addProductDialog.productImage);
 
     }
 
@@ -191,10 +177,24 @@ public class MenuEditorFragment extends Fragment {
         }
 
         @Override
-        public void onBindViewHolder(@NonNull ProductHolder holder, final int i) {
+        public void onBindViewHolder(@NonNull final ProductHolder holder, final int i) {
 
-            Picasso.with(getContext()).load(R.drawable.product_food)
-                    .into(holder.productImage);
+
+            Picasso.with(getContext()).load(products.get(i).getImageLink())
+                    .memoryPolicy(MemoryPolicy.NO_STORE, MemoryPolicy.NO_CACHE)
+                    .fit()
+                    .into(holder.productImage, new Callback() {
+                        @Override
+                        public void onSuccess() {
+
+                        }
+
+                        @Override
+                        public void onError() {
+                            Picasso.with(getContext()).load(R.drawable.product_food)
+                                    .into(holder.productImage);
+                        }
+                    });
 
             holder.productName.setText(products.get(i).getName());
             holder.productPrice.setText(products.get(i).getPrice()+" "+ getResources().getString(R.string.price_currency));
@@ -210,7 +210,8 @@ public class MenuEditorFragment extends Fragment {
             holder.editProduct.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    new AddProductDialog(getContext(), i);
+                    products.get(i).setImage(holder.productImage.getDrawable());
+                   addProductDialog =  new AddProductDialog(getContext(), i);
                 }
             });
 
@@ -381,8 +382,8 @@ public class MenuEditorFragment extends Fragment {
                     setCancelable(true);
                     try {
                         if(response.getString("state").equals("success")){
+                            startUploadImageTask(p.getProductId());
                             Toast.makeText(getContext(),R.string.productUpdate,Toast.LENGTH_SHORT).show();
-                            productAdapter.updateProduct(p,productIndex);
                         }
                         else
                             Toast.makeText(getContext(),R.string.unknownError,Toast.LENGTH_SHORT).show();
@@ -404,6 +405,7 @@ public class MenuEditorFragment extends Fragment {
 
         private void startAddTask(final Product p){
             setCancelable(false);
+
             AndroidNetworking.post(PHPHelper.Product.add)
                     .addBodyParameter("truckID",String.valueOf(truck.getTruckId()))
                     .addBodyParameter("name",p.getName())
@@ -414,7 +416,10 @@ public class MenuEditorFragment extends Fragment {
                 public void onResponse(JSONObject response) {
                     setCancelable(true);
                     try {
+                        p.setProductId(response.getInt("data"));
                         if(response.getString("state").equals("success")){
+                            startUploadImageTask(p.getProductId());
+
                             Toast.makeText(getContext(),R.string.productAdded,Toast.LENGTH_SHORT).show();
                             productAdapter.addProduct(p);
                             productAdapter.notifyItemInserted(productAdapter.getItemCount() - 1);
@@ -435,6 +440,28 @@ public class MenuEditorFragment extends Fragment {
                 }
             });
 
+        }
+
+        private void startUploadImageTask(long pid){
+            if(imageUri == null) {
+                return;
+            }
+
+            AndroidNetworking.upload(PHPHelper.Product.upload_image + "?pid=" + pid)
+                    .addMultipartFile("file",new File(imageUri.getPath()))
+                    .build().getAsJSONObject(new JSONObjectRequestListener() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    if(productIndex != -1)
+                        productAdapter.notifyItemChanged(productIndex);
+                    productAdapter.notifyItemChanged(productAdapter.getItemCount()-1);
+                }
+
+                @Override
+                public void onError(ANError anError) {
+
+                }
+            });
 
         }
 

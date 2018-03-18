@@ -1,6 +1,8 @@
 package com.example.z7n.foodtruck.Fragments;
 
 
+import android.media.Image;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -21,9 +23,15 @@ import com.example.z7n.foodtruck.LoginState;
 import com.example.z7n.foodtruck.PHPHelper;
 import com.example.z7n.foodtruck.R;
 import com.example.z7n.foodtruck.Truck;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.MemoryPolicy;
+import com.squareup.picasso.Picasso;
+import com.theartofdev.edmodo.cropper.CropImage;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.File;
 
 
 /**
@@ -56,10 +64,11 @@ public class TruckProfileFragment extends Fragment {
         // ========== MainActivity needs part ====================
         if(getActivity() != null) {
             MainActivity mc = (MainActivity) getActivity();
-            mc.setToolbarTitle(R.string.toolbar_profileTitle);
+            mc.setToolbarTitle(R.string.the_truck);
             mc.hideMenuItems();
             mc.getMenu().findItem(R.id.menuItem_editProfile).setVisible(true);
             mc.getMenu().findItem(R.id.menuItem_saveProfileUpdate).setVisible(true);
+            truck = mc.getLoginState().getTruck();
         }
         // ========== MainActivity needs part ====================
 
@@ -91,6 +100,58 @@ public class TruckProfileFragment extends Fragment {
             }
         });
 
+        truckImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(getActivity() != null)
+                    CropImage.activity().start(getActivity());
+            }
+        });
+
+            Picasso.with(getContext()).load(PHPHelper.Truck.get_truckImage + truck.getTruckId())
+                    .memoryPolicy(MemoryPolicy.NO_STORE, MemoryPolicy.NO_CACHE)
+                    .fit().into(truckImageView, new Callback() {
+            @Override
+            public void onSuccess() {
+
+            }
+
+            @Override
+            public void onError() {
+                Picasso.with(getContext()).load(R.drawable.foodtruck).fit().into(truckImageView);
+            }
+        });
+
+    }
+
+    public void startImageUpdateTask(final Uri uri, final ImageView headerImage) {
+        AndroidNetworking.upload(PHPHelper.Truck.upload_truckImage+"?truckId="+truck.getTruckId())
+        .addMultipartFile("file",new File(uri.getPath()))
+        .build().getAsJSONObject(new JSONObjectRequestListener() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    if(response.getString("state").equals("success")) {
+                        Picasso.with(getContext()).load(uri).fit()
+                                .into(truckImageView);
+                        Picasso.with(getContext()).load(uri).fit().into(headerImage);
+                        Toast.makeText(getContext(), R.string.truckImageUpdated, Toast.LENGTH_SHORT).show();
+                    }
+                    else
+                        Toast.makeText(getContext(), R.string.unknownError, Toast.LENGTH_SHORT).show();
+
+
+                } catch (JSONException e) {
+                    Toast.makeText(getContext(),R.string.unknownError,Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onError(ANError anError) {
+                Toast.makeText(getContext(),R.string.serverNotResponse,Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void initTruck() {

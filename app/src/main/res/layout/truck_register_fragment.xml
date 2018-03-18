@@ -140,18 +140,18 @@
 
     <EditText
         android:id="@+id/editText_truckName"
+        style="@style/myEditText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
-        style="@style/myEditText"
         android:hint="@string/truckName"
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editText_phoneNumber" />
+        app:layout_constraintTop_toBottomOf="@+id/register_truckImage" />
 
     <EditText
         android:id="@+id/editText_truckDescription"
@@ -166,6 +166,18 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editText_truckName" />
+
+    <ImageView
+        android:id="@+id/register_truckImage"
+        android:layout_width="@dimen/truck_profile_imageSize"
+        android:layout_height="@dimen/truck_profile_imageSize"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="24dp"
+        android:src="@drawable/foodtruck"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editText_phoneNumber" />
 
 </android.support.constraint.ConstraintLayout>
 

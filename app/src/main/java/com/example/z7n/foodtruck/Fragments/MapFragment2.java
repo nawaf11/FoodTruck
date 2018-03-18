@@ -23,10 +23,17 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.androidnetworking.AndroidNetworking;
+import com.androidnetworking.error.ANError;
+import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.example.z7n.foodtruck.Activity.MainActivity;
 import com.example.z7n.foodtruck.ILocationClient;
+import com.example.z7n.foodtruck.PHPHelper;
 import com.example.z7n.foodtruck.R;
+import com.example.z7n.foodtruck.Truck;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -35,9 +42,19 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+
+import io.nlopez.smartlocation.OnLocationUpdatedListener;
+import io.nlopez.smartlocation.SmartLocation;
 
 import static android.content.Context.LOCATION_SERVICE;
 
@@ -46,11 +63,12 @@ import static android.content.Context.LOCATION_SERVICE;
 
  */
 
-public class MapFragment2 extends Fragment implements OnMapReadyCallback, ILocationClient {
+public class MapFragment2 extends Fragment implements OnMapReadyCallback, ILocationClient, GoogleMap.OnInfoWindowClickListener, GoogleMap.InfoWindowAdapter {
     private MapView mapView;
     private GoogleMap googleMap;
     private LocationManager locationManager;
     private boolean comeFromGpsActivity;
+    private ArrayList<Truck> truckList;
 
     @SuppressLint("MissingPermission")
     @Nullable
@@ -68,6 +86,7 @@ public class MapFragment2 extends Fragment implements OnMapReadyCallback, ILocat
         View parent = inflater.inflate(R.layout.fragment_map, container, false);
 
         mapView = parent.findViewById(R.id.map);
+        truckList = new ArrayList<>();
 
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
@@ -77,8 +96,61 @@ public class MapFragment2 extends Fragment implements OnMapReadyCallback, ILocat
         return parent;
     }
 
+    private void startOpenTrucksTask(){
+        AndroidNetworking.get(PHPHelper.Truck.get_openTrucks)
+                .build().getAsJSONObject(new JSONObjectRequestListener() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    if(response.getString("state").equals("success")){
+                        responseOpenTruck_success(response);
+                    }
+                    else
+                        Toast.makeText(getContext(),R.string.unknownError,Toast.LENGTH_SHORT).show();
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    Toast.makeText(getContext(),R.string.unknownError,Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onError(ANError anError) {
+                Toast.makeText(getContext(),R.string.serverNotResponse,Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void responseOpenTruck_success(JSONObject response) throws JSONException {
+        JSONArray jsonArray = response.getJSONArray("data");
+        for(int i=0; i < jsonArray.length(); i++){
+            JSONObject jsonObject = jsonArray.getJSONObject(i);
+            Truck truck = new Truck();
+            truck.setTruckId(jsonObject.getLong("TruckID"));
+            truck.setUserName(jsonObject.getString("username"));
+            truck.setTruckName(jsonObject.getString("name"));
+            boolean isAcceptOrder = jsonObject.getString("canprepare")!=null &&
+                    jsonObject.getString("canprepare").toLowerCase().equals("true");
+            truck.setAcceptOrder(isAcceptOrder);
+            truck.setRate(jsonObject.getDouble("rate"));
+            truck.setDescription(jsonObject.getString("description"));
+            truck.setOpenUntil(jsonObject.getString("openUntil"));
+            LatLng latLng = new LatLng(jsonObject.getDouble("Latitude"), jsonObject.getDouble("Longitude"));
+            truck.setLatLng(latLng);
+            truckList.add(truck);
+
+            Log.d("mapItem","1:"+ truck.getTruckName());
+            Log.d("mapItem","1:"+truck.getDescription());
+        }
+
+        setTruckMarker();
+
+    }
 
     private boolean checkPermissions() {
+        if(getActivity() == null)
+            return false;
+
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(),
                 Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -93,9 +165,11 @@ public class MapFragment2 extends Fragment implements OnMapReadyCallback, ILocat
     @Override
     public void onMapReady(GoogleMap mMap) {
         googleMap = mMap;
+        googleMap.setOnInfoWindowClickListener(this);
+        googleMap.setInfoWindowAdapter(this);
         googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
-        setTruckMarker();
+        startOpenTrucksTask();
 
         mapView.onResume();
 
@@ -105,7 +179,7 @@ public class MapFragment2 extends Fragment implements OnMapReadyCallback, ILocat
 
         boolean enabled = false;
         if (locationManager != null)
-            enabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+            enabled = SmartLocation.with(getContext()).location().state().isGpsAvailable();
 
         // Check if enabled and if not send user to the GPS settings
         if (!enabled) {
@@ -118,11 +192,14 @@ public class MapFragment2 extends Fragment implements OnMapReadyCallback, ILocat
     }
 
     private void setTruckMarker() {
-        final LatLng riyadh = new LatLng(24.7136, 46.6753);
 
-        final MarkerOptions markerOpt = new MarkerOptions().position(riyadh).title("I am marker")
+        for (Truck truck : truckList) {
+        final MarkerOptions markerOpt = new MarkerOptions().position(truck.getLatLng()).title(truck.getTruckName())
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-        googleMap.addMarker(markerOpt);
+        Marker m = googleMap.addMarker(markerOpt);
+        m.setTag(truck);
+        }
+
 
     }
 
@@ -157,21 +234,62 @@ public class MapFragment2 extends Fragment implements OnMapReadyCallback, ILocat
     }
 
     private void moveCameraToUserLocation(){
-        Log.d("dfdsf","OUT");
-        if(getActivity() != null && getActivity() instanceof MainActivity &&
-                ((MainActivity) getActivity()).getUserLocation() != null) {
-            Log.d("dfdsf","IN");
+        SmartLocation.with(getContext()).location().oneFix().start(new OnLocationUpdatedListener() {
+            @Override
+            public void onLocationUpdated(Location location) {
+                LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                CameraPosition cameraPosition = CameraPosition.builder().target(latLng).zoom(12).build();
+                googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+            }
+        });
 
-            Location location = ((MainActivity) getActivity()).getUserLocation();
-            LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-            CameraPosition cameraPosition = CameraPosition.builder().target(latLng).zoom(12).build();
-            googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-        }
+
     }
 
-    private class GpsAlertDialog extends AlertDialog implements AlertDialog.OnClickListener {
+    @Override
+    public void onInfoWindowClick(Marker marker) {
 
-        protected GpsAlertDialog(Context context) {
+    }
+
+    @Override
+    public View getInfoWindow(Marker marker) {
+        return null;
+    }
+
+    @Override
+    public View getInfoContents(Marker marker) {
+        Truck truck = (Truck) marker.getTag();
+        if(truck == null)
+            return null;
+
+
+        View view = LayoutInflater.from(getContext()).inflate(R.layout.truck_map_item,null,false);
+        TextView truckName = view.findViewById(R.id.truckItem_truckName);
+        TextView truckDesc = view.findViewById(R.id.truckItem_description);
+        TextView distanceTextView = view.findViewById(R.id.truckItem_distance);
+
+        truckName.setText(truck.getTruckName());
+        truckDesc.setText(truck.getDescription());
+        float distance = -1;
+        Location lastLocation = SmartLocation.with(getContext()).location().oneFix().getLastLocation();
+        Location userLocation = new Location(LocationManager.GPS_PROVIDER);
+        userLocation.setLatitude(truck.getLatLng().latitude);
+        userLocation.setLongitude(truck.getLatLng().longitude);
+
+        if(lastLocation != null)
+            distance = lastLocation.distanceTo(userLocation);
+        if(distance >= 0.0)
+            distanceTextView.setText(distance + " KM");
+
+        Log.d("mapItem","2:"+ truck.getTruckName());
+        Log.d("mapItem","2:"+truck.getDescription());
+
+        return view;
+    }
+
+    public static class GpsAlertDialog extends AlertDialog implements AlertDialog.OnClickListener {
+
+        public GpsAlertDialog(Context context) {
             super(context);
             setTitle(R.string.gpsAlert_title);
             setMessage(getContext().getString(R.string.gpsAlert_message));
@@ -185,7 +303,7 @@ public class MapFragment2 extends Fragment implements OnMapReadyCallback, ILocat
             switch (i){
                 case AlertDialog.BUTTON_POSITIVE:
                     Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                    startActivity(intent);
+                    getContext().startActivity(intent);
                     break;
                 case AlertDialog.BUTTON_NEGATIVE:
                     dismiss();
