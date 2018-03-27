@@ -1,7 +1,9 @@
 package com.example.z7n.foodtruck.Fragments;
 
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -25,6 +27,7 @@ import com.example.z7n.foodtruck.Activity.MainActivity;
 import com.example.z7n.foodtruck.PHPHelper;
 import com.example.z7n.foodtruck.R;
 import com.example.z7n.foodtruck.Truck;
+import com.google.android.gms.maps.model.LatLng;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.Picasso;
@@ -33,7 +36,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Locale;
+
+import io.nlopez.smartlocation.SmartLocation;
 
 /**
  * Created by nawaf on 2/7/2018.
@@ -151,6 +158,20 @@ public class TruckListFragment extends Fragment {
             truck.setTruckName(jsonObject.getString("name"));
             boolean state_flag = jsonObject.getString("status").equals("true");
             truck.setStatus(state_flag);
+            String lat = jsonObject.getString("Latitude");
+            String lng = jsonObject.getString("Longitude");
+            double latD = -1;
+            double lngD = -1;
+
+            try {
+                latD = Double.parseDouble(lat);
+                lngD = Double.parseDouble(lng);
+            } catch (NumberFormatException e){e.printStackTrace();}
+
+            if(latD != -1 && lngD != -1) {
+                LatLng latLng = new LatLng(latD,lngD);
+                truck.setLatLng(latLng);
+            }
 
             truckList.add(truck);
         }
@@ -178,9 +199,11 @@ public class TruckListFragment extends Fragment {
         }
 
         @Override
-        public void onBindViewHolder(final TruckHolder holder, final int i) {
+        public void onBindViewHolder(@NonNull final TruckHolder holder, final int i) {
             holder.setTruckName(truckList.get(i).getTruckName());
-            holder.setTruckDistance(20.1);
+            holder.distanceText.setText("");
+            if(truckList.get(holder.getAdapterPosition()).isStatusOpen())
+                dealWithDistance(holder);
             Picasso.with(getContext()).load(PHPHelper.Truck.get_truckImage + truckList.get(i).getTruckId())
                     .memoryPolicy(MemoryPolicy.NO_STORE, MemoryPolicy.NO_CACHE)
                     .fit().into(holder.truckImage, new Callback() {
@@ -208,6 +231,34 @@ public class TruckListFragment extends Fragment {
                     }
                 }
             });
+        }
+
+        private void dealWithDistance(TruckHolder holder) {
+            Truck truck = truckList.get(holder.getAdapterPosition());
+            if(truck.getLatLng() == null) {
+                holder.distanceText.setText(" ");
+                return;
+            }
+
+            float distance = -1;
+            Location lastLocation = SmartLocation.with(getContext()).location().oneFix().getLastLocation();
+            Location userLocation = new Location(LocationManager.GPS_PROVIDER);
+            userLocation.setLatitude(truck.getLatLng().latitude);
+            userLocation.setLongitude(truck.getLatLng().longitude);
+
+            if(lastLocation != null)
+                distance = lastLocation.distanceTo(userLocation);
+
+            Log.d("distance","1: "+distance);
+            distance = distance / 1000;
+            Log.d("distance","2: "+distance);
+            DecimalFormat precision = (DecimalFormat) DecimalFormat.getNumberInstance(Locale.US);
+            precision.applyPattern("0.0");
+            String distanceKM = precision.format(distance);
+            Log.d("distance","3: "+distance);
+
+            if(!distanceKM.equals("0.0"))
+                holder.distanceText.setText(distanceKM + " " + getString(R.string.KM));
         }
 
         @Override

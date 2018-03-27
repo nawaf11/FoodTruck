@@ -20,6 +20,7 @@ public class PHPHelper {
         public static final String upload_truckImage = DOMAIN_NAME + "php/upload_truckImage.php";
         public static final String get_truckImage = DOMAIN_NAME + "images/trucks/";
         public static String get_openTrucks = DOMAIN_NAME + "php/getOpenTrucks.php";
+        public static String rate = DOMAIN_NAME + "php/rate.php";
     }
 
     public static class Customer {

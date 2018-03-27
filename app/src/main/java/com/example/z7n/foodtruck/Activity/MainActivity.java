@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private DrawerLayout mDrawerLayout;
     private LoginState loginState; // Detail of current login: isVisitor? , isTruck?, get Truck/Customer Object
     private Menu menu;
-    private Location userLocation; // The current location of user (Truck/Customer/Visitor)
+    //private Location userLocation; // The current location of user (Truck/Customer/Visitor)
 
 /** TODO:
   ================== Fragments: ====================
@@ -527,7 +527,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public void onLocationUpdated(Location location) {
         Log.d("locationUpdate","locationUpdate: "+location.getLongitude()+" , "+ location.getLatitude());
-        userLocation = location;
+        //userLocation = location;
     }
 
     private class MyTimePickerDialog extends Dialog implements TimePicker.OnTimeChangedListener {

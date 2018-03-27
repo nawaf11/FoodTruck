@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
@@ -39,6 +40,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
@@ -51,7 +53,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
@@ -69,6 +74,7 @@ public class MapFragment2 extends Fragment implements OnMapReadyCallback, ILocat
     private LocationManager locationManager;
     private boolean comeFromGpsActivity;
     private ArrayList<Truck> truckList;
+    private Target markerBitmapTarget;
 
     @SuppressLint("MissingPermission")
     @Nullable
@@ -92,6 +98,7 @@ public class MapFragment2 extends Fragment implements OnMapReadyCallback, ILocat
         mapView.getMapAsync(this);
 
         locationManager = (LocationManager) getContext().getSystemService(LOCATION_SERVICE);
+
 
         return parent;
     }
@@ -193,14 +200,33 @@ public class MapFragment2 extends Fragment implements OnMapReadyCallback, ILocat
 
     private void setTruckMarker() {
 
-        for (Truck truck : truckList) {
-        final MarkerOptions markerOpt = new MarkerOptions().position(truck.getLatLng()).title(truck.getTruckName())
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-        Marker m = googleMap.addMarker(markerOpt);
-        m.setTag(truck);
-        }
+        markerBitmapTarget = new Target() {
+            @Override
+            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                BitmapDescriptor icon = BitmapDescriptorFactory.fromBitmap(bitmap);
 
+                for (Truck truck : truckList) {
+                    final MarkerOptions markerOpt = new MarkerOptions().position(truck.getLatLng()).title(truck.getTruckName())
+                            .icon(icon);
+                    Marker m = googleMap.addMarker(markerOpt);
+                    m.setTag(truck);
+                }
+            }
 
+            @Override
+            public void onBitmapFailed(Drawable errorDrawable) {
+
+            }
+
+            @Override
+            public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+            }
+        };
+
+        int w = (int) getResources().getDimension(R.dimen.iconMarkerSize);
+        int h = (int) getResources().getDimension(R.dimen.iconMarkerSize);
+        Picasso.with(getContext()).load(R.drawable.foodtruck2).resize(w, h).into(markerBitmapTarget);
     }
 
 
@@ -278,8 +304,18 @@ public class MapFragment2 extends Fragment implements OnMapReadyCallback, ILocat
 
         if(lastLocation != null)
             distance = lastLocation.distanceTo(userLocation);
-        if(distance >= 0.0)
-            distanceTextView.setText(distance + " KM");
+
+        Log.d("distance","1: "+distance);
+        distance = distance / 1000;
+        Log.d("distance","2: "+distance);
+        DecimalFormat precision = (DecimalFormat) DecimalFormat.getNumberInstance(Locale.US);
+        precision.applyPattern("0.0");
+        String distanceKM = precision.format(distance);
+        Log.d("distance","3: "+distance);
+
+
+        if(!distanceKM.equals("0.0"))
+            distanceTextView.setText(distanceKM + " " + getString(R.string.KM));
 
         Log.d("mapItem","2:"+ truck.getTruckName());
         Log.d("mapItem","2:"+truck.getDescription());

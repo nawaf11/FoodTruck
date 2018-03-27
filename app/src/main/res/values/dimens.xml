@@ -15,4 +15,5 @@
     <dimen name="phoneEmail_IconSize">40dp</dimen>
     <dimen name="favoriteStar_iconSize">25dp</dimen>
     <dimen name="timeExplain_timepickerDialog">16sp</dimen>
+    <dimen name="iconMarkerSize">40dp</dimen>
 </resources>

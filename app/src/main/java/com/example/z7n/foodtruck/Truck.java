@@ -2,6 +2,7 @@ package com.example.z7n.foodtruck;
 
 import android.content.Context;
 import android.location.Location;
+import android.support.annotation.Nullable;
 import android.view.View;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -141,7 +142,7 @@ public class Truck {
         this.latLng = latLng;
     }
 
-    public LatLng getLatLng() {
+    public @Nullable LatLng getLatLng() {
         return latLng;
     }
 }

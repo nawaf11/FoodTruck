@@ -87,5 +87,8 @@
     <string name="midnight">منتصف الليل</string>
     <string name="noon">ظهراً</string>
     <string name="choose_closeTime">أختر وقت إغلاق العربة</string>
+    <string name="selectRateFirst">يجب تحديد التقييم أولاً</string>
+    <string name="rate_success">شكراً لتقييمك العربة.</string>
+    <string name="KM">KM</string>
 
 </resources>

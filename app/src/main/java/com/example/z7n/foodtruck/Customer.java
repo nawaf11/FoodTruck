@@ -32,7 +32,7 @@ public class Customer {
        return favorateTrucks.remove(id);
     }
 
-    public long geUserId() {
+    public long getUserId() {
         return id;
     }
 

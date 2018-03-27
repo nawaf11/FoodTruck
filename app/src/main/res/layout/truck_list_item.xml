@@ -31,14 +31,15 @@
 
     <TextView
         android:id="@+id/truckItem_distanceTextView"
-        android:layout_width="52dp"
-        android:layout_height="19dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="14.4 KM"
+        android:textColor="@color/truckStatus_red"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/truckItem_truckName"
-        app:layout_constraintTop_toBottomOf="@+id/truckItem_truckName"
-        android:layout_marginLeft="8dp" />
+        app:layout_constraintTop_toBottomOf="@+id/truckItem_truckName" />
 
 
 </android.support.constraint.ConstraintLayout>
