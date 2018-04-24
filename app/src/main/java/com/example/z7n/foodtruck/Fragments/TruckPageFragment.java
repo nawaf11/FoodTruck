@@ -65,6 +65,8 @@ public class TruckPageFragment extends Fragment {
             MainActivity mc = (MainActivity) getActivity();
             mc.setToolbarTitle(R.string.truck_page);
             mc.hideMenuItems();
+            if(getArguments() != null && getArguments().getBoolean("fromList",false))
+                mc.getMenu().findItem(R.id.menuItem_backButton).setVisible(true);
             customer = mc.getLoginState().getCustomer();
         }
         // ========== MainActivity needs part ====================
@@ -140,6 +142,24 @@ public class TruckPageFragment extends Fragment {
                      Toast.makeText(getContext(),R.string.youMustRegister, Toast.LENGTH_SHORT).show();
                      return;
                  }
+
+                 if(!truck.isStatusOpen()){
+                     Toast.makeText(getContext(),R.string.cannotOrder_truckClosed, Toast.LENGTH_SHORT).show();
+                     return;
+                 }
+
+                if(!truck.isAcceptOrder()){
+                    Toast.makeText(getContext(),R.string.cannotOrder_notAcceptOrder, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                OrderFragment orderFragment = new OrderFragment();
+                Bundle bndl = new Bundle();
+                bndl.putLong("truck_id", truck.getTruckId());
+                orderFragment.setArguments(bndl);
+
+                if(getActivity() != null)
+                    ((MainActivity)getActivity()).setFragment(orderFragment, true);
             }
         });
 
@@ -231,12 +251,12 @@ public class TruckPageFragment extends Fragment {
             }
         });
 
-
-
-
     }
 
     private void initTruckFromJson(JSONObject response) throws JSONException {
+        if(getContext() == null)
+            return;
+
         response = response.getJSONObject("data");
 
         truck.setTruckName(response.getString("name"));

@@ -19,6 +19,7 @@
     <color name="truckStatus_green">#35dc35</color>
     <color name="truckStatus_red">#dc2e37</color>
     <color name="lightGray">#dedede</color>
+    <color name="label_color">#018fbe</color>
 </resources>
 
 

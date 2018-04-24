@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    android:elevation="8dp"
+    android:paddingBottom="8dp"
+    android:background="@drawable/shadow_rectangle_container"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/orderStatus_textView"
+        style="@style/myText1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/order_status_background_pending"
+        android:text="@string/pending_await_order"
+        android:textColor="@color/colorTextWhite"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/orderBy_label"
+        style="@style/myText1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:gravity="start"
+        android:text="@string/order_by"
+        android:textAlignment="viewStart"
+        android:textStyle="normal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/orderBy_value"
+        style="@style/myText1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        android:text="Anas"
+        android:textColor="@color/label_color"
+        android:textStyle="normal"
+        app:layout_constraintBottom_toBottomOf="@+id/orderBy_label"
+        app:layout_constraintStart_toEndOf="@+id/orderBy_label"
+        app:layout_constraintTop_toTopOf="@+id/orderBy_label" />
+
+    <TextView
+        android:id="@+id/orderTime_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="16dp"
+        android:text="قبل 3 أيام"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/orderStatus_textView" />
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/orderItems_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/orderTime_textView">
+
+        <TextView
+            android:id="@+id/orderItemsContainer_label"
+            style="@style/myText1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="@string/order_detail"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginLeft="8dp" />
+
+        <ImageView
+            android:id="@+id/orderItemContainer_icon"
+            android:layout_width="@dimen/expand_icon_size"
+            android:layout_height="@dimen/expand_icon_size"
+            android:layout_gravity="center"
+            android:layout_marginStart="8dp"
+            android:src="@drawable/ic_arrow_drop_down_black_24dp"
+            app:layout_constraintStart_toEndOf="@+id/orderItemsContainer_label"
+            app:layout_constraintTop_toTopOf="@+id/orderItemsContainer_label"
+            android:layout_marginLeft="8dp" />
+
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/orderItems_detailContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/orderItems_header">
+
+        <TextView
+            android:id="@+id/orderPrice_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:text="23.5"
+            android:textColor="@color/truckStatus_green"
+            app:layout_constraintBottom_toBottomOf="@+id/orderPrice_label"
+            app:layout_constraintStart_toEndOf="@+id/orderPrice_label"
+            app:layout_constraintTop_toTopOf="@+id/orderPrice_label" />
+
+        <TextView
+            android:id="@+id/orderPrice_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:text="@string/total_price"
+            android:textColor="@color/colorTextBlack"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/orderItems_recyclerView" />
+
+        <LinearLayout
+            android:id="@+id/detailTable_header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/the_product" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/the_quantity" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/the_price" />
+
+        </LinearLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/orderItems_recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/detailTable_header">
+
+        </android.support.v7.widget.RecyclerView>
+
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/vertical_center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
+
+    <TextView
+        android:id="@+id/accept_order"
+        style="@style/myText1"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:background="#1ba138"
+        android:gravity="center"
+        android:text="@string/accept"
+        android:textColor="@color/colorTextWhite"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/vertical_center"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/orderItems_detailContainer" />
+
+    <TextView
+        android:id="@+id/reject_order"
+        style="@style/myText1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/reject"
+        android:background="@android:color/holo_red_dark"
+        android:textColor="@color/colorTextWhite"
+        android:textStyle="bold"
+        android:gravity="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/vertical_center"
+        app:layout_constraintTop_toBottomOf="@+id/orderItems_detailContainer" />
+
+</android.support.constraint.ConstraintLayout>

@@ -90,5 +90,36 @@
     <string name="selectRateFirst">يجب تحديد التقييم أولاً</string>
     <string name="rate_success">شكراً لتقييمك العربة.</string>
     <string name="KM">KM</string>
+    <string name="send_order">إرسال الطلب</string>
+    <string name="totalPrice">قيمة الطلب الكلية: </string>
+    <string name="orderPrice_mustBe_moreThan_1">يجب أن لاتقل قيمة الطلب عن 1 ريال</string>
+    <string name="cannotOrder_truckClosed">عذراً العربة مغلقة.</string>
+    <string name="cannotOrder_notAcceptOrder">عذراً العربة لاتقبل تحضير الطعام.</string>
+    <string name="IWantToReceiveOrders_fromCustomers">أريد إستقبال طلبات تحضير الطعام من الزبائن.</string>
+    <string name="mustAddProducts_first">يجب إضافة منتجات أولاً</string>
+    <string name="orderInserted_success">تم إرسال الطلب بنجاح</string>
+    <string name="noFavoriteTrucks">لا توجد عربات في المفضلة</string>
+    <string name="favorite">المفضلة</string>
+    <string name="my_orders">طلباتي</string>
+    <string name="pending_await_order">في الإنتظار</string>
+    <string name="order_by">تم الطلب بواسطة:</string>
+    <string name="total_price">السعر الكلي:</string>
+    <string name="order_detail">تفاصيل الطلب</string>
+    <string name="the_product">المنتج</string>
+    <string name="the_quantity">الكمية</string>
+    <string name="the_price">السعر</string>
+    <string name="accept_order">قبول الطلب</string>
+    <string name="reject_order">رفض الطلب</string>
+    <string name="no_order_found">لا توجد طلبات.</string>
+    <string name="orderStatus_accepted">مقبول</string>
+    <string name="orderStatus_rejected">مرفوض</string>
+    <string name="reject">رفض</string>
+    <string name="accept">قبول</string>
+    <string name="orderUpdated">تم تحديث حالة الطلب</string>
+    <string name="new_order_forYou_title">طلب جديد!</string>
+    <string name="new_order_forYou_detail">يوجد طلبات جديدة (انقر للمزيد من التفاصيل)</string>
+    <string name="order_from">طلب من العربة:</string>
+    <string name="yourOrder_statusUpdated">تم تحديث حالة طلبك!</string>
+    <string name="clickForDetail">(انقر للمزيد من التفاصيل)</string>
 
 </resources>

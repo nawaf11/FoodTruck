@@ -23,6 +23,7 @@ public class Truck {
     private boolean isAcceptOrder=false; // is the truck want accept order from customer.
     private double rate; // ex: 4.5
     private int rateNum;
+    private long lastOrderID=-1;
 
 
     private Location location; // current location of the truck.
@@ -144,5 +145,13 @@ public class Truck {
 
     public @Nullable LatLng getLatLng() {
         return latLng;
+    }
+
+    public long getLastOrderID() {
+        return lastOrderID;
+    }
+
+    public void setLastOrderID(long lastOrderID) {
+        this.lastOrderID = lastOrderID;
     }
 }

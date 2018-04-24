@@ -2,6 +2,7 @@
 <android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="@drawable/shadow_rectangle_container"
     android:elevation="8dp"
     android:layout_marginTop="@dimen/topMargin_bwProductItems"
@@ -63,8 +64,8 @@
 
     <ImageView
         android:id="@+id/delete_product"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:layout_width="@dimen/product_icon_size"
+        android:layout_height="@dimen/product_icon_size"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:src="@android:drawable/ic_delete"
@@ -74,8 +75,8 @@
 
     <ImageView
         android:id="@+id/edit_product"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:layout_width="@dimen/product_icon_size"
+        android:layout_height="@dimen/product_icon_size"
         android:layout_marginStart="16dp"
         android:src="@drawable/edit_icon"
         android:tint="@color/colorPrimaryLight"
@@ -83,5 +84,48 @@
         app:layout_constraintTop_toTopOf="@+id/delete_product"
         android:layout_marginLeft="16dp" />
 
+    <ImageView
+        android:id="@+id/increment_quantity"
+        android:layout_width="@dimen/product_icon_size"
+        android:layout_height="@dimen/product_icon_size"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
+        android:src="@android:drawable/ic_input_add"
+        app:layout_constraintBottom_toBottomOf="@+id/orderCount__quantity"
+        app:layout_constraintEnd_toStartOf="@+id/orderCount__quantity"
+        app:layout_constraintTop_toTopOf="@+id/orderCount__quantity"
+        android:layout_marginRight="8dp" />
+
+    <TextView
+        android:id="@+id/orderCount__quantity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:background="@color/colorSecondary"
+        android:padding="8dp"
+        android:text="0"
+        android:textColor="@color/colorTextWhite"
+        android:textSize="@dimen/orderQuantity_count_textSize"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/decrement_quantity"
+        app:layout_constraintTop_toBottomOf="@+id/product_description"
+        android:layout_marginRight="8dp" />
+
+    <ImageView
+        android:id="@+id/decrement_quantity"
+        android:layout_width="@dimen/product_icon_size"
+        android:layout_height="@dimen/product_icon_size"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
+        android:src="@drawable/minus"
+        android:tint="@color/truckStatus_red"
+        app:layout_constraintBottom_toBottomOf="@+id/orderCount__quantity"
+        app:layout_constraintEnd_toEndOf="@+id/product_description"
+        app:layout_constraintTop_toTopOf="@+id/orderCount__quantity"
+        android:layout_marginRight="8dp" />
 
 </android.support.constraint.ConstraintLayout>

@@ -60,6 +60,7 @@ public class LoginState {
         truck.setPhoneNumber(data.getString("phoneNum"));
         truck.setStatus(data.getString("status").equals("true"));
         truck.setAcceptOrder(data.getString("canprepare").equals("true"));
+        truck.setLastOrderID(data.getLong("lastOrder"));
 
         loginState.setTruck(truck);
         return loginState;

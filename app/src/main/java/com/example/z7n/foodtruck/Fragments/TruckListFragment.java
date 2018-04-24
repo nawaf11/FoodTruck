@@ -1,5 +1,6 @@
 package com.example.z7n.foodtruck.Fragments;
 
+import android.content.Context;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -14,7 +15,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -80,10 +80,10 @@ public class TruckListFragment extends Fragment {
 
     private void setupRecyclerView(View parent){
 
-        RecyclerView recyclerView = parent.findViewById(R.id.listView_truckList);
-        LinearLayoutManager mLayoutManager = new LinearLayoutManager(getContext().getApplicationContext());
+        RecyclerView recyclerView = parent.findViewById(R.id.recyclerView);
+        LinearLayoutManager mLayoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(mLayoutManager);
-        truckAdapter = (new TruckAdapter(new ArrayList<Truck>()));
+        truckAdapter = (new TruckAdapter(getContext(), new ArrayList<Truck>()));
         recyclerView.setAdapter(truckAdapter);
 
         EndlessRecyclerViewScrollListener scrollListener =
@@ -182,14 +182,18 @@ public class TruckListFragment extends Fragment {
         progressBar.setVisibility(View.INVISIBLE);
     }
 
-    private class TruckAdapter extends RecyclerView.Adapter<TruckAdapter.TruckHolder> {
+    static class TruckAdapter extends RecyclerView.Adapter<TruckAdapter.TruckHolder> {
         ArrayList<Truck> truckList;
+        private Context context;
 
-        public TruckAdapter(ArrayList<Truck> list){
+        public TruckAdapter(Context context, ArrayList<Truck> list){
             truckList = list;
+            this.context = context;
             if(truckList == null)
                 truckList = new ArrayList<>();
         }
+
+        public Context getContext(){return context;}
 
         @Override
         public TruckHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -222,10 +226,11 @@ public class TruckListFragment extends Fragment {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    MainActivity ma = ((MainActivity)getActivity());
+                    MainActivity ma = ((MainActivity)getContext());
                     if(ma != null) {
                         TruckPageFragment fragment = new TruckPageFragment();
                         Bundle bundle = new Bundle(); bundle.putLong("truck_id",truckList.get(i).getTruckId());
+                        bundle.putBoolean("fromList",true);
                         fragment.setArguments(bundle);
                         ma.setFragment(fragment, true);
                     }
@@ -257,8 +262,8 @@ public class TruckListFragment extends Fragment {
             String distanceKM = precision.format(distance);
             Log.d("distance","3: "+distance);
 
-            if(!distanceKM.equals("0.0"))
-                holder.distanceText.setText(distanceKM + " " + getString(R.string.KM));
+            if(Double.parseDouble(distanceKM) >= 0.1)
+                holder.distanceText.setText(distanceKM + " " + getContext().getString(R.string.KM));
         }
 
         @Override

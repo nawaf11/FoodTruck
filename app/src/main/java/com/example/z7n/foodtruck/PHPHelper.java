@@ -21,6 +21,8 @@ public class PHPHelper {
         public static final String get_truckImage = DOMAIN_NAME + "images/trucks/";
         public static String get_openTrucks = DOMAIN_NAME + "php/getOpenTrucks.php";
         public static String rate = DOMAIN_NAME + "php/rate.php";
+        public static String acceptOrder = DOMAIN_NAME + "php/can_prepare.php";
+        public static String get_favorites = DOMAIN_NAME + "php/getFavoriteTrucks.php";
     }
 
     public static class Customer {
@@ -37,6 +39,16 @@ public class PHPHelper {
         public static final String upload_image = DOMAIN_NAME + "php/upload_productImage.php";
         public static final String image = DOMAIN_NAME + "images/products/";
 
+
+    }
+
+    public static class Order {
+        public static final String add = DOMAIN_NAME +  "php/insert_order.php";
+        public static final String get_truck_orders = DOMAIN_NAME +  "php/my_order.php";
+        public static String update_status = DOMAIN_NAME + "php/update_orderStatus.php";
+        public static String truck_get_newOrder = DOMAIN_NAME + "php/myNewOrders.php";
+        public static String get_customer_orders = DOMAIN_NAME + "php/customer_order.php";
+        public static String get_customer_orderUpdates = DOMAIN_NAME + "php/orderListCustomers.php";
 
     }
 }

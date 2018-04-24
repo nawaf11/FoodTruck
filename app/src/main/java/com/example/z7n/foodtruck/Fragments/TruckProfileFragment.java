@@ -5,11 +5,14 @@ import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -20,6 +23,7 @@ import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.example.z7n.foodtruck.Activity.MainActivity;
 import com.example.z7n.foodtruck.LoginState;
+import com.example.z7n.foodtruck.NotificationUtils;
 import com.example.z7n.foodtruck.PHPHelper;
 import com.example.z7n.foodtruck.R;
 import com.example.z7n.foodtruck.Truck;
@@ -52,6 +56,7 @@ public class TruckProfileFragment extends Fragment {
     private EditText truckDescription_editText;
     private ImageView truckImageView;
     private Button editMenu_button;
+    private CheckBox isAcceptOrder_checkBox;
 
     public TruckProfileFragment() {
         // Required empty public constructor
@@ -77,7 +82,6 @@ public class TruckProfileFragment extends Fragment {
         initViews();
         initTruck(); // set truck obj from MainActivity and show the data.
 
-
         return parentView;
     }
 
@@ -91,6 +95,7 @@ public class TruckProfileFragment extends Fragment {
         truckImageView = parentView.findViewById(R.id.truckProfile_truckImage);
         changePassword = parentView.findViewById(R.id.truckProfile_changePassword);
         editMenu_button = parentView.findViewById(R.id.truckProfile_editMenu_button);
+        isAcceptOrder_checkBox = parentView.findViewById(R.id.isAcceptOrder_checkBox);
 
         editMenu_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -108,20 +113,75 @@ public class TruckProfileFragment extends Fragment {
             }
         });
 
+        if(truck != null) {
             Picasso.with(getContext()).load(PHPHelper.Truck.get_truckImage + truck.getTruckId())
                     .memoryPolicy(MemoryPolicy.NO_STORE, MemoryPolicy.NO_CACHE)
                     .fit().into(truckImageView, new Callback() {
-            @Override
-            public void onSuccess() {
+                @Override
+                public void onSuccess() {
 
+                }
+
+                @Override
+                public void onError() {
+                    Picasso.with(getContext()).load(R.drawable.foodtruck).fit().into(truckImageView);
+                }
+            });
+        }
+
+            isAcceptOrder_checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if(isAcceptOrder_checkBox.getTag() != null){
+                        return;
+                    }
+
+                    changeCheckView(!isChecked);
+                    startIsAcceptOrderTask(isChecked);
+
+                }
+            });
+
+    }
+
+    private void changeCheckView(boolean isOn){
+        isAcceptOrder_checkBox.setTag("justView");
+        isAcceptOrder_checkBox.setChecked(isOn);
+        isAcceptOrder_checkBox.setTag(null);
+    }
+
+    private void startIsAcceptOrderTask(final boolean isChecked){
+        AndroidNetworking.post(PHPHelper.Truck.acceptOrder)
+                .addBodyParameter("TruckID",String.valueOf(truck.getTruckId()))
+                .addBodyParameter("canprepare",String.valueOf(isChecked))
+                .build().getAsJSONObject(new JSONObjectRequestListener() {
+            @Override
+            public void onResponse(JSONObject response) {
+                Log.d("isAccept", response.toString());
+                try {
+                    if(response.getString("state").equals("success")){
+                        changeCheckView(isChecked);
+                        truck.setAcceptOrder(isChecked);
+                    }
+                    else if(response.getString("error_msg").equals("products_empty"))
+                        Toast.makeText(getContext(),R.string.mustAddProducts_first,Toast.LENGTH_SHORT).show();
+
+                    else{
+                        Toast.makeText(getContext(), R.string.unknownError, Toast.LENGTH_SHORT).show();
+                    }
+                } catch (JSONException e) {
+                    Toast.makeText(getContext(), R.string.unknownError, Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
+                }
             }
 
             @Override
-            public void onError() {
-                Picasso.with(getContext()).load(R.drawable.foodtruck).fit().into(truckImageView);
+            public void onError(ANError anError) {
+                Log.d("isAccept", anError.getErrorDetail());
+                Log.d("isAccept", anError.getResponse().toString());
+                Toast.makeText(getContext(), R.string.serverNotResponse, Toast.LENGTH_SHORT).show();
             }
         });
-
     }
 
     public void startImageUpdateTask(final Uri uri, final ImageView headerImage) {
@@ -174,6 +234,7 @@ public class TruckProfileFragment extends Fragment {
         phone_editText.setText(truck.getPhoneNumber());
         truckName_editText.setText(truck.getTruckName());
         truckDescription_editText.setText(truck.getDescription());
+        isAcceptOrder_checkBox.setChecked(truck.isAcceptOrder());
 
     }
 

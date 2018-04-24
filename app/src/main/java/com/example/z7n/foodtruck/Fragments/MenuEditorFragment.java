@@ -1,11 +1,9 @@
 package com.example.z7n.foodtruck.Fragments;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
-import android.graphics.PorterDuff;
-import android.media.Image;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -29,6 +27,7 @@ import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.example.z7n.foodtruck.Activity.MainActivity;
+import com.example.z7n.foodtruck.Order;
 import com.example.z7n.foodtruck.PHPHelper;
 import com.example.z7n.foodtruck.Product;
 import com.example.z7n.foodtruck.R;
@@ -86,7 +85,7 @@ public class MenuEditorFragment extends Fragment {
         addProduct.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addProductDialog = new AddProductDialog(getContext(), -1);
+                addProductDialog = new AddProductDialog(MenuEditorFragment.this, -1);
             }
         });
 
@@ -103,7 +102,7 @@ public class MenuEditorFragment extends Fragment {
 
     private void initList(){
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        productAdapter = new ProductAdapter(new ArrayList<Product>());
+        productAdapter = new ProductAdapter(getContext(), new ArrayList<Product>());
         getProductsTask();
         recyclerView.setAdapter(productAdapter);
 
@@ -163,12 +162,33 @@ public class MenuEditorFragment extends Fragment {
 
     }
 
-    private class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductHolder> {
+    public static class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductHolder> {
+        private  boolean isOrderForm = false;
         private ArrayList<Product> products;
+        private Context context;
+        private MenuEditorFragment menuEditorFragment;
+        private OrderFragment orderFragment;
 
-        public ProductAdapter(ArrayList<Product> list) {
+        public ProductAdapter(Context context, ArrayList<Product> list) {
             products = list;
+            this.context = context;
         }
+
+        public ProductAdapter(OrderFragment orderFragment, ArrayList<Product> list) {
+            products = list;
+            this.context = orderFragment.getContext();
+            this.orderFragment = orderFragment;
+        }
+
+        public ProductAdapter(MenuEditorFragment menuEditorFragment, ArrayList<Product> list) {
+            products = list;
+            this.menuEditorFragment = menuEditorFragment;
+            this.context = menuEditorFragment.getContext();
+        }
+
+        public ArrayList<Product> getProducts(){return products;}
+
+        private Context getContext(){ return context;}
 
         @Override
         public ProductHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -176,6 +196,7 @@ public class MenuEditorFragment extends Fragment {
             return new ProductHolder(view);
         }
 
+        @SuppressLint("SetTextI18n")
         @Override
         public void onBindViewHolder(@NonNull final ProductHolder holder, final int i) {
 
@@ -197,7 +218,7 @@ public class MenuEditorFragment extends Fragment {
                     });
 
             holder.productName.setText(products.get(i).getName());
-            holder.productPrice.setText(products.get(i).getPrice()+" "+ getResources().getString(R.string.price_currency));
+            holder.productPrice.setText(products.get(i).getPrice()+" "+ getContext().getResources().getString(R.string.price_currency));
             holder.productDescription.setText(products.get(i).getDescription());
 
             holder.deleteProduct.setOnClickListener(new View.OnClickListener() {
@@ -211,11 +232,44 @@ public class MenuEditorFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     products.get(i).setImage(holder.productImage.getDrawable());
-                   addProductDialog =  new AddProductDialog(getContext(), i);
+                   menuEditorFragment.addProductDialog =  new AddProductDialog(menuEditorFragment, i);
                 }
             });
 
+            holder.plusQuantity.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Integer currentValue = Integer.parseInt(holder.orderQuantity.getText().toString());
+                    if(currentValue != 99) {
+                        holder.orderQuantity.setText(String.valueOf(currentValue + 1));
+                        products.get(i).setOrderQuantity(currentValue+1);
+                        orderFragment.updateTotalPrice(getTotalPrice());
+                    }
+                }
+            });
+
+            holder.minusQuantity.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Integer currentValue = Integer.parseInt(holder.orderQuantity.getText().toString());
+                    if(currentValue != 0){
+                            holder.orderQuantity.setText(String.valueOf(currentValue - 1));
+                            products.get(i).setOrderQuantity(currentValue - 1);
+                            orderFragment.updateTotalPrice(getTotalPrice());
+                    }
+                }
+            });
         }
+
+        public double getTotalPrice(){
+            double totalPrice = 0;
+            for (int i =0; i < products.size(); i++){
+                totalPrice = totalPrice + (products.get(i).getOrderQuantity() * products.get(i).getPrice());
+            }
+            return totalPrice;
+        }
+
+        public void withOrderForm(){isOrderForm = true;}
 
         private void removeProductTask(final int i) {
             AndroidNetworking.post(PHPHelper.Product.delete)
@@ -253,7 +307,6 @@ public class MenuEditorFragment extends Fragment {
             notifyItemChanged(i);
         }
 
-
         @Override
         public int getItemCount() {
             return products.size();
@@ -267,6 +320,10 @@ public class MenuEditorFragment extends Fragment {
             private TextView productPrice;
             private TextView productDescription;
 
+            private TextView orderQuantity;
+            private ImageView plusQuantity;
+            private ImageView minusQuantity;
+
             public ProductHolder(View itemView) {
                 super(itemView);
                 productImage = itemView.findViewById(R.id.product_image);
@@ -275,18 +332,32 @@ public class MenuEditorFragment extends Fragment {
                 productDescription = itemView.findViewById(R.id.product_description);
                 deleteProduct = itemView.findViewById(R.id.delete_product);
                 editProduct = itemView.findViewById(R.id.edit_product);
+                orderQuantity = itemView.findViewById(R.id.orderCount__quantity);
+                plusQuantity = itemView.findViewById(R.id.increment_quantity);
+                minusQuantity = itemView.findViewById(R.id.decrement_quantity);
+
+                if(!isOrderForm){
+                    orderQuantity.setVisibility(View.GONE);
+                    plusQuantity.setVisibility(View.GONE);
+                    minusQuantity.setVisibility(View.GONE);
+                } else {
+                    deleteProduct.setVisibility(View.GONE);
+                    editProduct.setVisibility(View.GONE);
+                }
             }
         }
     }
 
-    private class AddProductDialog extends Dialog {
+    private static class AddProductDialog extends Dialog {
         private EditText productName, productPrice, productDescription;
         private ImageView productImage, productAdderIcon;
         private Uri imageUri;
         int productIndex;
+        private MenuEditorFragment menuEditorFragment;
 
-         AddProductDialog(Context context, int productToUpdateIndex) {
-            super(context);
+         AddProductDialog(MenuEditorFragment menuEditorFragment, int productToUpdateIndex) {
+            super(menuEditorFragment.getContext());
+            this.menuEditorFragment = menuEditorFragment;
             this.productIndex = productToUpdateIndex;
              setTitle(R.string.add_product);
              setContentView( setupViews() );
@@ -297,7 +368,7 @@ public class MenuEditorFragment extends Fragment {
          }
 
         private void updateMode(){
-             Product product = productAdapter.products.get(productIndex);
+             Product product = menuEditorFragment.productAdapter.products.get(productIndex);
              productName.setText(product.getName());
              productPrice.setText(String.valueOf(product.getPrice()));
              productDescription.setText(product.getDescription());
@@ -321,8 +392,8 @@ public class MenuEditorFragment extends Fragment {
             productImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(getActivity() != null)
-                        CropImage.activity().start(getActivity());
+                    if(menuEditorFragment.getActivity() != null)
+                        CropImage.activity().start(menuEditorFragment.getActivity());
                 }
             });
 
@@ -367,7 +438,7 @@ public class MenuEditorFragment extends Fragment {
         private boolean isUpdateMode(){return  productIndex != -1;}
 
         private void startUpdateTask(final Product p){
-            p.setProductId(productAdapter.products.get(productIndex).getProductId());
+            p.setProductId(menuEditorFragment.productAdapter.products.get(productIndex).getProductId());
 
             setCancelable(false);
 
@@ -407,7 +478,7 @@ public class MenuEditorFragment extends Fragment {
             setCancelable(false);
 
             AndroidNetworking.post(PHPHelper.Product.add)
-                    .addBodyParameter("truckID",String.valueOf(truck.getTruckId()))
+                    .addBodyParameter("truckID",String.valueOf(menuEditorFragment.truck.getTruckId()))
                     .addBodyParameter("name",p.getName())
                     .addBodyParameter("price",String.valueOf(p.getPrice()))
                     .addBodyParameter("description",p.getDescription())
@@ -421,8 +492,8 @@ public class MenuEditorFragment extends Fragment {
                             startUploadImageTask(p.getProductId());
 
                             Toast.makeText(getContext(),R.string.productAdded,Toast.LENGTH_SHORT).show();
-                            productAdapter.addProduct(p);
-                            productAdapter.notifyItemInserted(productAdapter.getItemCount() - 1);
+                            menuEditorFragment.productAdapter.addProduct(p);
+                            menuEditorFragment.productAdapter.notifyItemInserted(menuEditorFragment.productAdapter.getItemCount() - 1);
                         }
                         else
                             Toast.makeText(getContext(),R.string.unknownError,Toast.LENGTH_SHORT).show();
@@ -453,8 +524,8 @@ public class MenuEditorFragment extends Fragment {
                 @Override
                 public void onResponse(JSONObject response) {
                     if(productIndex != -1)
-                        productAdapter.notifyItemChanged(productIndex);
-                    productAdapter.notifyItemChanged(productAdapter.getItemCount()-1);
+                        menuEditorFragment.productAdapter.notifyItemChanged(productIndex);
+                    menuEditorFragment.productAdapter.notifyItemChanged(menuEditorFragment.productAdapter.getItemCount()-1);
                 }
 
                 @Override
@@ -471,12 +542,12 @@ public class MenuEditorFragment extends Fragment {
             }
 
         private void setupWindowSize() {
-            if(getActivity() == null || getWindow() == null)
+            if(menuEditorFragment.getActivity() == null || getWindow() == null)
                 return;
 
             Log.d("sdfs","ddddd");
             DisplayMetrics displayMetrics = new DisplayMetrics();
-            getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+           menuEditorFragment.getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
             int displayWidth = displayMetrics.widthPixels;
            // int displayHeight = displayMetrics.heightPixels;
 

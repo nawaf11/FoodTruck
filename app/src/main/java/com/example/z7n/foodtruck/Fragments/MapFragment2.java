@@ -65,7 +65,6 @@ import static android.content.Context.LOCATION_SERVICE;
 
 /**
  * Created by z7n on 1/31/2018.
-
  */
 
 public class MapFragment2 extends Fragment implements OnMapReadyCallback, ILocationClient, GoogleMap.OnInfoWindowClickListener, GoogleMap.InfoWindowAdapter {
@@ -82,7 +81,7 @@ public class MapFragment2 extends Fragment implements OnMapReadyCallback, ILocat
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         // ========== MainActivity needs part ====================
-        if(getActivity() != null) {
+        if (getActivity() != null) {
             MainActivity mc = (MainActivity) getActivity();
             mc.setToolbarTitle(R.string.toolbar_mapTitle);
             mc.hideMenuItems();
@@ -103,40 +102,44 @@ public class MapFragment2 extends Fragment implements OnMapReadyCallback, ILocat
         return parent;
     }
 
-    private void startOpenTrucksTask(){
+    private void startOpenTrucksTask() {
         AndroidNetworking.get(PHPHelper.Truck.get_openTrucks)
                 .build().getAsJSONObject(new JSONObjectRequestListener() {
             @Override
             public void onResponse(JSONObject response) {
                 try {
-                    if(response.getString("state").equals("success")){
+                    if (response.getString("state").equals("success")) {
                         responseOpenTruck_success(response);
-                    }
-                    else
-                        Toast.makeText(getContext(),R.string.unknownError,Toast.LENGTH_SHORT).show();
+                    } else
+                        Toast.makeText(getContext(), R.string.unknownError, Toast.LENGTH_SHORT).show();
 
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    Toast.makeText(getContext(),R.string.unknownError,Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), R.string.unknownError, Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onError(ANError anError) {
-                Toast.makeText(getContext(),R.string.serverNotResponse,Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), R.string.serverNotResponse, Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     private void responseOpenTruck_success(JSONObject response) throws JSONException {
-        JSONArray jsonArray = response.getJSONArray("data");
-        for(int i=0; i < jsonArray.length(); i++){
+        JSONArray jsonArray;
+        if(response.has("data")) {
+            jsonArray = response.getJSONArray("data");
+        } else
+            jsonArray = new JSONArray();
+
+        for (int i = 0; i < jsonArray.length(); i++) {
             JSONObject jsonObject = jsonArray.getJSONObject(i);
             Truck truck = new Truck();
             truck.setTruckId(jsonObject.getLong("TruckID"));
             truck.setUserName(jsonObject.getString("username"));
             truck.setTruckName(jsonObject.getString("name"));
-            boolean isAcceptOrder = jsonObject.getString("canprepare")!=null &&
+            boolean isAcceptOrder = jsonObject.getString("canprepare") != null &&
                     jsonObject.getString("canprepare").toLowerCase().equals("true");
             truck.setAcceptOrder(isAcceptOrder);
             truck.setRate(jsonObject.getDouble("rate"));
@@ -146,8 +149,8 @@ public class MapFragment2 extends Fragment implements OnMapReadyCallback, ILocat
             truck.setLatLng(latLng);
             truckList.add(truck);
 
-            Log.d("mapItem","1:"+ truck.getTruckName());
-            Log.d("mapItem","1:"+truck.getDescription());
+            Log.d("mapItem", "1:" + truck.getTruckName());
+            Log.d("mapItem", "1:" + truck.getDescription());
         }
 
         setTruckMarker();
@@ -155,7 +158,7 @@ public class MapFragment2 extends Fragment implements OnMapReadyCallback, ILocat
     }
 
     private boolean checkPermissions() {
-        if(getActivity() == null)
+        if (getActivity() == null)
             return false;
 
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
@@ -171,6 +174,9 @@ public class MapFragment2 extends Fragment implements OnMapReadyCallback, ILocat
     @SuppressLint("MissingPermission")
     @Override
     public void onMapReady(GoogleMap mMap) {
+        if(getContext() == null)
+            return;
+
         googleMap = mMap;
         googleMap.setOnInfoWindowClickListener(this);
         googleMap.setInfoWindowAdapter(this);
@@ -192,8 +198,7 @@ public class MapFragment2 extends Fragment implements OnMapReadyCallback, ILocat
         if (!enabled) {
             new GpsAlertDialog(getContext()).show();
             comeFromGpsActivity = true;
-        }
-        else
+        } else
             moveCameraToUserLocation();
 
     }
@@ -235,31 +240,32 @@ public class MapFragment2 extends Fragment implements OnMapReadyCallback, ILocat
 
         if (comeFromGpsActivity && getActivity() != null && getActivity() instanceof MainActivity) {
             comeFromGpsActivity = false;
-            moveCameraToUserLocation();;
+            moveCameraToUserLocation();
+            ;
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-            if (getContext() != null &&
-                    ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-                    == PackageManager.PERMISSION_GRANTED &&
-                    ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
-                            == PackageManager.PERMISSION_GRANTED) {
-                googleMap.setMyLocationEnabled(true);
-                moveCameraToUserLocation();
-            }
+        if (getContext() != null &&
+                ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                        == PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
+                        == PackageManager.PERMISSION_GRANTED) {
+            googleMap.setMyLocationEnabled(true);
+            moveCameraToUserLocation();
+        }
     }
 
     @Override
     public void onLocationUpdated(LocationResult locationResult) {
-        if(googleMap == null)
+        if (googleMap == null)
             return;
 
-       // moveMapCameraTo(locationResult.getLastLocation());
+        // moveMapCameraTo(locationResult.getLastLocation());
     }
 
-    private void moveCameraToUserLocation(){
+    private void moveCameraToUserLocation() {
         SmartLocation.with(getContext()).location().oneFix().start(new OnLocationUpdatedListener() {
             @Override
             public void onLocationUpdated(Location location) {
@@ -274,7 +280,18 @@ public class MapFragment2 extends Fragment implements OnMapReadyCallback, ILocat
 
     @Override
     public void onInfoWindowClick(Marker marker) {
+        final Truck truck = (Truck) marker.getTag();
+        if (truck == null)
+            return;
 
+        MainActivity ma = ((MainActivity) getActivity());
+        if (ma != null) {
+            TruckPageFragment fragment = new TruckPageFragment();
+            Bundle bundle = new Bundle();
+            bundle.putLong("truck_id", truck.getTruckId());
+            fragment.setArguments(bundle);
+            ma.setFragment(fragment, true);
+        }
     }
 
     @Override
@@ -284,12 +301,12 @@ public class MapFragment2 extends Fragment implements OnMapReadyCallback, ILocat
 
     @Override
     public View getInfoContents(Marker marker) {
-        Truck truck = (Truck) marker.getTag();
-        if(truck == null)
+        final Truck truck = (Truck) marker.getTag();
+        if (truck == null)
             return null;
 
 
-        View view = LayoutInflater.from(getContext()).inflate(R.layout.truck_map_item,null,false);
+        View view = LayoutInflater.from(getContext()).inflate(R.layout.truck_map_item, null, false);
         TextView truckName = view.findViewById(R.id.truckItem_truckName);
         TextView truckDesc = view.findViewById(R.id.truckItem_description);
         TextView distanceTextView = view.findViewById(R.id.truckItem_distance);
@@ -302,23 +319,23 @@ public class MapFragment2 extends Fragment implements OnMapReadyCallback, ILocat
         userLocation.setLatitude(truck.getLatLng().latitude);
         userLocation.setLongitude(truck.getLatLng().longitude);
 
-        if(lastLocation != null)
+        if (lastLocation != null)
             distance = lastLocation.distanceTo(userLocation);
 
-        Log.d("distance","1: "+distance);
+        Log.d("distance", "1: " + distance);
         distance = distance / 1000;
-        Log.d("distance","2: "+distance);
+        Log.d("distance", "2: " + distance);
         DecimalFormat precision = (DecimalFormat) DecimalFormat.getNumberInstance(Locale.US);
         precision.applyPattern("0.0");
         String distanceKM = precision.format(distance);
-        Log.d("distance","3: "+distance);
+        Log.d("distance", "3: " + distance);
 
 
-        if(!distanceKM.equals("0.0"))
+        if (!distanceKM.equals("0.0"))
             distanceTextView.setText(distanceKM + " " + getString(R.string.KM));
 
-        Log.d("mapItem","2:"+ truck.getTruckName());
-        Log.d("mapItem","2:"+truck.getDescription());
+        Log.d("mapItem", "2:" + truck.getTruckName());
+        Log.d("mapItem", "2:" + truck.getDescription());
 
         return view;
     }
@@ -329,14 +346,14 @@ public class MapFragment2 extends Fragment implements OnMapReadyCallback, ILocat
             super(context);
             setTitle(R.string.gpsAlert_title);
             setMessage(getContext().getString(R.string.gpsAlert_message));
-            setButton(BUTTON_POSITIVE,getContext().getString(R.string.gpsAlert_positiveButton), this);
-            setButton(BUTTON_NEGATIVE,getContext().getString(R.string.gpsAlert_negativeButton), this);
+            setButton(BUTTON_POSITIVE, getContext().getString(R.string.gpsAlert_positiveButton), this);
+            setButton(BUTTON_NEGATIVE, getContext().getString(R.string.gpsAlert_negativeButton), this);
         }
 
 
         @Override
         public void onClick(DialogInterface dialogInterface, int i) {
-            switch (i){
+            switch (i) {
                 case AlertDialog.BUTTON_POSITIVE:
                     Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                     getContext().startActivity(intent);

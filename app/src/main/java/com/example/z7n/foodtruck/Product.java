@@ -18,6 +18,8 @@ public class Product {
     private Drawable image;
     private Uri imageUri;
 
+    private int orderQuantity;
+
     public Product(){
 
     }
@@ -73,5 +75,13 @@ public class Product {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public int getOrderQuantity() {
+        return orderQuantity;
+    }
+
+    public void setOrderQuantity(int orderQuantity) {
+        this.orderQuantity = orderQuantity;
     }
 }

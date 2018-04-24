@@ -109,6 +109,7 @@ public class LoginFragment extends Fragment{
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
                     public void onResponse(JSONObject response) {
+                        Log.d("login", response.toString());
                         try {
                             boolean isLoginSuccess = response.getString("state").equals("success");
                             if(!isLoginSuccess){ // Error: username/password not match.
@@ -124,7 +125,7 @@ public class LoginFragment extends Fragment{
 
                     @Override
                     public void onError(ANError anError) {
-                        Log.d("server-response",anError.getErrorDetail());
+                        Log.d("login",anError.getErrorDetail());
                         Toast.makeText(getContext(), R.string.serverNotResponse,Toast.LENGTH_SHORT).show();
                     }
                 });

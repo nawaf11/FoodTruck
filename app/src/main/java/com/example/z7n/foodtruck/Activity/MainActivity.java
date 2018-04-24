@@ -2,7 +2,10 @@ package com.example.z7n.foodtruck.Activity;
 
 
 import android.Manifest;
+import android.app.ActivityManager;
 import android.app.Dialog;
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -10,11 +13,13 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -38,14 +43,19 @@ import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.example.z7n.foodtruck.Customer;
+import com.example.z7n.foodtruck.Database.DbHelper;
+import com.example.z7n.foodtruck.Fragments.FavoriteTrucksFragment;
 import com.example.z7n.foodtruck.Fragments.LoginFragment;
-import com.example.z7n.foodtruck.Fragments.MapFragment;
 import com.example.z7n.foodtruck.Fragments.MapFragment2;
 import com.example.z7n.foodtruck.Fragments.MenuEditorFragment;
+import com.example.z7n.foodtruck.Fragments.MyOrderFragmentCustomer;
+import com.example.z7n.foodtruck.Fragments.MyOrdersFragment;
 import com.example.z7n.foodtruck.Fragments.RegisterFragment;
 import com.example.z7n.foodtruck.Fragments.TruckListFragment;
 import com.example.z7n.foodtruck.Fragments.TruckProfileFragment;
 import com.example.z7n.foodtruck.LoginState;
+import com.example.z7n.foodtruck.NotificationUtils;
+import com.example.z7n.foodtruck.Order;
 import com.example.z7n.foodtruck.PHPHelper;
 import com.example.z7n.foodtruck.R;
 import com.example.z7n.foodtruck.SHP;
@@ -55,6 +65,7 @@ import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -64,8 +75,12 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
@@ -78,6 +93,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private DrawerLayout mDrawerLayout;
     private LoginState loginState; // Detail of current login: isVisitor? , isTruck?, get Truck/Customer Object
     private Menu menu;
+    private View splash;
+
+    private int NOTIFICATION_ID = 0;
     //private Location userLocation; // The current location of user (Truck/Customer/Visitor)
 
 /** TODO:
@@ -107,6 +125,203 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         loginState = getRememberLoginState();
 
+        testServiceTask();
+
+        splash = findViewById(R.id.splash);
+        new Handler().postDelayed(new Runnable(){
+            @Override
+            public void run() {
+               // splash.setVisibility(View.GONE);
+                mDrawerLayout.removeView(splash);
+            }
+        }, 1800);
+
+    }
+
+    private void testServiceTask() {
+        ScheduledExecutorService scheduleTaskExecutor = Executors.newScheduledThreadPool(5);
+
+        scheduleTaskExecutor.scheduleAtFixedRate(new Runnable() {
+            public void run() {
+                Log.d("myServiceTask", "START");
+                if(loginState.isVisitor())
+                    return;
+
+                if(loginState.getTruck() != null)
+                    truckServiceTask();
+                else if(loginState.getCustomer() != null)
+                    customerServiceTask();
+            }
+        }, 0, 20, TimeUnit.SECONDS);
+    }
+
+    private void customerServiceTask() {
+        if (loginState.getCustomer() == null)
+            return;
+
+        DbHelper dbHelper = new DbHelper(this);
+        String orderText = "";
+        final ArrayList<Order> orderList = dbHelper.getOrders();
+        if( orderList.size() == 0)
+            return;
+
+        for (Order order: orderList) {
+            orderText += order.getOrderID();
+            orderText+=",";
+        }
+        orderText = orderText.substring(0, orderText.length()-1);
+
+        AndroidNetworking.get(PHPHelper.Order.get_customer_orderUpdates)
+                .addQueryParameter("orderList", orderText)
+                .build().getAsJSONObject(new JSONObjectRequestListener() {
+            @Override
+            public void onResponse(JSONObject response) {
+                Log.d("serviceResponse", response.toString());
+                showNotificationCustomer(response);
+            }
+
+            @Override
+            public void onError(ANError anError) {
+                Log.d("serviceResponse", anError.getErrorDetail());
+
+            }
+        });
+
+    }
+
+    private void showNotificationCustomer(JSONObject response) {
+        JSONArray data = null;
+        try {
+            data = response.getJSONArray("data");
+            if(!response.getString("state").equals("success") || data == null || data.length() == 0)
+                return;
+
+            DbHelper dbHelper = new DbHelper(this);
+
+            for(int i=0; i < data.length(); i ++){
+                JSONObject object = data.getJSONObject(i);
+                long oid = object.getLong("oid");
+                dbHelper.deleteOrder(oid);
+            }
+
+            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+            Notification notification;
+            String title = getString(R.string.yourOrder_statusUpdated);
+            String detail = getString(R.string.clickForDetail);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
+                notification = new NotificationUtils(this).getNotification(title, detail).build();
+            else
+                notification = new NotificationUtils(this).getNotification(title, detail).getNotification();
+
+            if(! appInForeground()) {
+                notificationManager.notify(NOTIFICATION_ID++, notification);
+            }
+            else if (getSupportFragmentManager().getPrimaryNavigationFragment() instanceof MyOrderFragmentCustomer) {
+                MyOrderFragmentCustomer myOrdersFragment = (MyOrderFragmentCustomer)
+                        getSupportFragmentManager().getPrimaryNavigationFragment();
+                myOrdersFragment.restartListTask();
+                Toast.makeText(this, R.string.yourOrder_statusUpdated, Toast.LENGTH_LONG).show();
+            }
+            else {
+                for(int i=0; i < getSupportFragmentManager().getBackStackEntryCount(); i++ )
+                    getSupportFragmentManager().popBackStack();
+                navigationSelectedItem = R.id.navigationBarItem_myOrders;
+                setFragment(new MyOrderFragmentCustomer());
+                Toast.makeText(this, R.string.yourOrder_statusUpdated, Toast.LENGTH_LONG).show();
+            }
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void truckServiceTask() {
+        if (loginState.getTruck() == null)
+            return;
+
+        Log.d("lasOrder",loginState.getTruck().getLastOrderID()+"");
+        AndroidNetworking.get(PHPHelper.Order.truck_get_newOrder)
+                .addQueryParameter("oid", String.valueOf(loginState.getTruck().getLastOrderID()))
+                .addQueryParameter("truckId", String.valueOf(loginState.getTruck().getTruckId()))
+                .build().getAsJSONObject(new JSONObjectRequestListener() {
+            @Override
+            public void onResponse(JSONObject response) {
+                Log.d("serviceResponse", response.toString());
+                showNotificationTruck(response);
+            }
+
+            @Override
+            public void onError(ANError anError) {
+                Log.d("serviceResponse", anError.getErrorDetail());
+
+            }
+        });
+
+    }
+
+    private void showNotificationTruck(JSONObject response){
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+
+        try {
+            JSONArray data = response.getJSONArray("data");
+
+            if(!response.getString("state").equals("success") || data == null || data.length() == 0)
+                return;
+
+            long lastOrderID = -1;
+            for(int i=0; i < data.length(); i++){
+                JSONObject object = data.getJSONObject(i);
+                lastOrderID = object.getLong("oid");
+            }
+
+            getLoginState().getTruck().setLastOrderID(lastOrderID);
+
+            Notification notification;
+            String title = getString(R.string.new_order_forYou_title);
+            String detail = getString(R.string.new_order_forYou_detail);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
+                notification = new NotificationUtils(this).getNotification(title, detail).build();
+            else
+                notification = new NotificationUtils(this).getNotification(title, detail).getNotification();
+
+            if(! appInForeground()) {
+                notificationManager.notify(NOTIFICATION_ID++, notification);
+            }
+            else if (getSupportFragmentManager().getPrimaryNavigationFragment() instanceof MyOrdersFragment) {
+                MyOrdersFragment myOrdersFragment = (MyOrdersFragment) getSupportFragmentManager().getPrimaryNavigationFragment();
+                myOrdersFragment.restartListTask();
+                Toast.makeText(this, R.string.new_order_forYou_title, Toast.LENGTH_LONG).show();
+            }
+            else {
+                for(int i=0; i < getSupportFragmentManager().getBackStackEntryCount(); i++ )
+                    getSupportFragmentManager().popBackStack();
+                navigationSelectedItem = R.id.navigationBarItem_myOrders;
+                setFragment(new MyOrdersFragment());
+                Toast.makeText(this, R.string.new_order_forYou_title, Toast.LENGTH_LONG).show();
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private boolean appInForeground() {
+        ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningAppProcessInfo> runningAppProcesses = activityManager.getRunningAppProcesses();
+        if (runningAppProcesses == null) {
+            return false;
+        }
+
+        for (ActivityManager.RunningAppProcessInfo runningAppProcess : runningAppProcesses) {
+            if (runningAppProcess.processName.equals(getPackageName()) &&
+                    runningAppProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -114,6 +329,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onStart();
         if(checkLocationPermission())
             SmartLocation.with(this).location().start(this); // To keep update user location.
+
+        if(getIntent().getExtras() != null &&
+                getIntent().getExtras().getBoolean("truckNewOrder",false)){ // if From notification new Order (Truck)
+//            for(int i=0; i < getSupportFragmentManager().getBackStackEntryCount(); i++ )
+//                getSupportFragmentManager().popBackStack();
+//            navigationSelectedItem = R.id.navigationBarItem_myOrders;
+//            setFragment(new MyOrdersFragment());
+        }
     }
 
     private void setupToolbar_NavigationView(){
@@ -135,7 +358,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mNavigationView.setNavigationItemSelectedListener(this);
 
         mNavigationView.setCheckedItem(R.id.navigationBarItem_truckList);
-        navigationSelectedItem = R.id.navigationBarItem_truckList;
+        navigationSelectedItem = R.id.navigationBarItem_map;
 
         // =========== Setup Navigation Header ==============
         View navHeader =  mNavigationView.getHeaderView(0);
@@ -274,7 +497,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         getMenuInflater().inflate(R.menu.toolbar_menu,menu);
         this.menu = menu;
         hideMenuItems();
-        setFragment(new TruckListFragment());
+        setFragment(new MapFragment2());
+        mNavigationView.setCheckedItem(R.id.navigationBarItem_map);
         return true;
     }
 
@@ -313,12 +537,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         mDrawerLayout.closeDrawer(GravityCompat.START);
 
-        for(int i=0; i < getSupportFragmentManager().getBackStackEntryCount(); i++ ) {
-            getSupportFragmentManager().popBackStack();
+            for(int i=0; i < getSupportFragmentManager().getBackStackEntryCount(); i++ ) {
+                getSupportFragmentManager().popBackStack();
         }
 
-       if(item.getItemId() == navigationSelectedItem)
+        Log.d("navBar","pass 1");
+
+        if(item.getItemId() == navigationSelectedItem)
            return true;
+
+            Log.d("navBar","pass 2");
 
         navigationSelectedItem = item.getItemId();
         mNavigationView.setCheckedItem(item.getItemId());
@@ -334,6 +562,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             case R.id.navigationBarItem_profile:
                 setFragment(new TruckProfileFragment() );
+                return true;
+
+            case R.id.navigationBarItem_favorite:
+                setFragment(new FavoriteTrucksFragment() );
+                return true;
+
+            case R.id.navigationBarItem_myOrders:
+                if(loginState.isTruck())
+                    setFragment(new MyOrdersFragment());
+                else
+                    setFragment(new MyOrderFragmentCustomer());
+
                 return true;
         }
 
@@ -368,6 +608,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         transaction.replace(R.id.fragment_container, fragment).setPrimaryNavigationFragment(fragment).commit();
 
+        Log.d("setFragment", "called with: isBackTrace="+isBackTrace+" , " +
+                "backStackNum:"+getSupportFragmentManager().getBackStackEntryCount());
+
         if(getSupportFragmentManager().getBackStackEntryCount() > 0)
             menu.findItem(R.id.menuItem_backButton).setVisible(true);
 
@@ -379,8 +622,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private boolean isNavFragment(Fragment f) {
         return f instanceof TruckListFragment ||
-                f instanceof MapFragment ||
-                f instanceof TruckProfileFragment;
+                f instanceof MapFragment2 ||
+                f instanceof TruckProfileFragment ||
+                f instanceof MyOrdersFragment ||
+                f instanceof MyOrderFragmentCustomer ||
+                f instanceof FavoriteTrucksFragment
+                ;
     }
 
     private void loginChangeTruckHeader(Truck truck){
@@ -388,6 +635,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mNavigationView.getHeaderView(0).findViewById(R.id.visitorHeader_container).setVisibility(View.GONE);
         mNavigationView.getHeaderView(0).findViewById(R.id.customerHeader_container).setVisibility(View.GONE);
 
+        mNavigationView.getMenu().findItem(R.id.navigationBarItem_profile).setVisible(true);
+        mNavigationView.getMenu().findItem(R.id.navigationBarItem_myOrders).setVisible(true);
         if (truck == null)
             return;
 
@@ -434,6 +683,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mNavigationView.getHeaderView(0).findViewById(R.id.visitorHeader_container).setVisibility(View.GONE);
         mNavigationView.getHeaderView(0).findViewById(R.id.customerHeader_container).setVisibility(View.VISIBLE);
 
+        mNavigationView.getMenu().findItem(R.id.navigationBarItem_profile).setVisible(false);
+        mNavigationView.getMenu().findItem(R.id.navigationBarItem_myOrders).setVisible(true);
         if (customer == null)
             return;
 
@@ -446,6 +697,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mNavigationView.getHeaderView(0).findViewById(R.id.visitorHeader_container).setVisibility(View.VISIBLE);
         mNavigationView.getHeaderView(0).findViewById(R.id.truckHeader_container).setVisibility(View.GONE);
         mNavigationView.getHeaderView(0).findViewById(R.id.customerHeader_container).setVisibility(View.GONE);
+
+        mNavigationView.getMenu().findItem(R.id.navigationBarItem_profile).setVisible(false);
+        mNavigationView.getMenu().findItem(R.id.navigationBarItem_myOrders).setVisible(false);
     }
 
     public LoginState getRememberLoginState() {
