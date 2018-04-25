@@ -1,10 +1,15 @@
 # FoodTruck Locator
 ![](readme_images/ic_launcher.png)
 
-Food Truck locator - Graduation project
+Introdution
+--------
+(Food Truck locator - Graduation project)
+"Food Truck" Application helps to connect between the customer and the Food Truck owner since the food truck moves from a place to another. The customer can find the nearby trucks and also can see the menu and prices. 
 
-Android app to help customers to find nearb.
+The app enables the customer to make orders from the food trucks. The app gives the Truck owners additional way to increase their revenue by having more customers with nearby truck feature, also helps the Truck owners to be found by their customers, and they can offer their new products by updating the menu.
 
+Features
+--------
 -	Truck’s owner can add menu.
 -	Truck’s owner can update the menu. 
 -	Truck’s owner can update their location.  
