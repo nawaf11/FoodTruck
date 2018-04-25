@@ -3,8 +3,7 @@
 
 Introdution
 --------
-(Graduation project)
-"Food Truck" Application helps to connect between the customer and the Food Truck owner since the food truck moves from a place to another. The customer can find the nearby trucks and also can see the menu and prices. 
+"Food Truck" Application (Graduation Project) helps to connect between the customer and the Food Truck owner since the food truck moves from a place to another. The customer can find the nearby trucks and also can see the menu and prices. 
 
 The app gives the Truck owners additional way to increase their revenue by having more customers with nearby truck feature, also can have more orders by Order system feature which allows customers to making orders from the trucks.
 
