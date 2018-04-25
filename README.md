@@ -17,7 +17,7 @@ Features
 -	Customer can rate the Food trucks
 -	Customer can see the nearby Food trucks (MapView).
 - Review System (rating).
-- Order System: Customer can make order from trucks to prepare order.
+- Order System: Customer can make order from trucks to prepare order. (with receiving notification)
 - Trucks can accept or reject the order.
 
 
