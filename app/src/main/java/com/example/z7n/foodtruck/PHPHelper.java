@@ -7,7 +7,7 @@ package com.example.z7n.foodtruck;
 
 public class PHPHelper {
 
-    public static final String DOMAIN_NAME = "http://foodtruck.mywebcommunity.org/";
+    public static final String DOMAIN_NAME = "***";
 
     public static class Truck {
         public static final String insert = DOMAIN_NAME + "php/register_truck.php";
