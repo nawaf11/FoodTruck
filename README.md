@@ -19,3 +19,11 @@ Features
 - Review System (rating).
 - Order System: Customer can make order from trucks to prepare order.
 - Trucks can accept or reject the order.
+
+
+Screenshot
+--------
+![](readme_images/sh1.png)
+![](readme_images/sh2.png)
+![](readme_images/sh3.png)
+![](readme_images/sh4.png)
