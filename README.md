@@ -29,3 +29,9 @@ Screenshot
 ![](readme_images/sh4.png)
 ![](readme_images/sh5.png)
 
+Download
+--------
+You can find alpha 0.1 version [HERE][1]
+
+[1]: https://github.com/nawaf11/FoodTruck/releases
+
